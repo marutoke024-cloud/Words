@@ -2,6 +2,7 @@ import * as db from './db.js';
 import * as yt from './youtube.js';
 import * as srs from './srs.js';
 import * as gemini from './gemini.js';
+import { LANDING_IMAGES } from './landing-images.js';
 
 /* ============ Service Worker ============ */
 if ('serviceWorker' in navigator) {
@@ -105,6 +106,7 @@ let pendingShare = null;
 
 /* ============ ルーター ============ */
 const routes = {
+  landing: renderLanding,
   home: renderHome,
   gallery: renderGallery,
   capture: renderCapture,
@@ -113,9 +115,10 @@ const routes = {
 };
 
 async function route() {
-  const name = (location.hash.replace(/^#\//, '') || 'home').split('?')[0];
+  // ハッシュ無しで開いたときはランディング(玄関)を表示する
+  const name = (location.hash.replace(/^#\/?/, '') || 'landing').split('?')[0];
   const render = routes[name] || renderHome;
-  document.body.dataset.route = name;
+  document.body.dataset.route = routes[name] ? name : 'home';
   document.querySelectorAll('.tabbar a, .desktop-nav a').forEach((a) => {
     a.classList.toggle('active', a.dataset.route === name);
   });
@@ -136,6 +139,109 @@ async function updateBadges() {
     el.hidden = unsorted.length === 0;
     el.textContent = unsorted.length;
   });
+}
+
+/* ============ ランディング(シリンダーギャラリー) ============ */
+// 参考: meech213.com — 円筒の内側に貼ったカードが回転する玄関ページ。
+// 画像は js/landing-images.js で差し替え可能。
+async function renderLanding() {
+  const n = LANDING_IMAGES.length;
+  viewEl.innerHTML = `
+    <div class="landing">
+      <div class="l-tagline">忘れた頃が、<br>使い頃。</div>
+      <div class="l-links">
+        <button id="l-flow">流し見</button>
+        <button id="l-settings">設定</button>
+      </div>
+      <div class="l-logo">言の葉帖</div>
+      <div class="l-scene" id="l-scene">
+        <div class="l-cylinder" id="l-cylinder">
+          ${LANDING_IMAGES.map((im, i) => `
+            <a class="l-card" href="#/gallery" data-i="${i}">
+              <img src="${escapeHtml(im.src)}" alt="${escapeHtml(im.alt || '')}" draggable="false" loading="eager">
+            </a>`).join('')}
+        </div>
+      </div>
+      <nav class="l-nav">
+        <a class="l-n l-n--gallery" href="#/gallery">一覧</a>
+        <a class="l-n l-n--review" href="#/review">復習</a>
+        <a class="l-n l-n--home" href="#/home">はじめる</a>
+        <a class="l-n l-n--sort" href="#/sort">仕分け</a>
+        <a class="l-n l-n--capture" href="#/capture">拾う</a>
+      </nav>
+      <div class="l-copy">© All rights reserved. ${new Date().getFullYear()}</div>
+      <div class="l-credit">言の葉帖 — Phrase Stock</div>
+    </div>
+  `;
+
+  $('#l-flow').addEventListener('click', openFlow);
+  $('#l-settings').addEventListener('click', openSettings);
+
+  const scene = $('#l-scene');
+  const cyl = $('#l-cylinder');
+  const cards = [...cyl.children];
+  const step = 360 / n;
+
+  let radius = 0;
+  function layout() {
+    if (!cyl.isConnected) {
+      window.removeEventListener('resize', layout);
+      return;
+    }
+    const cardW = Math.min(window.innerWidth * 0.44, window.innerHeight * 0.38, 300);
+    document.documentElement.style.setProperty('--l-card-w', `${cardW}px`);
+    radius = Math.round(((cardW + 46) * n) / (2 * Math.PI));
+    cards.forEach((c, i) => {
+      // カードごとに僅かに傾け、手貼りの雰囲気を出す
+      const tilt = ((i % 3) - 1) * 2.5;
+      c.style.transform = `rotateY(${i * step}deg) translateZ(${radius}px) rotateZ(${tilt}deg)`;
+    });
+  }
+  layout();
+  window.addEventListener('resize', layout);
+
+  // スクロール/ドラッグ量 → 回転角。放っておいてもゆっくり回る。
+  const BASE_SPEED = 0.06;
+  let angle = 0;
+  let vel = BASE_SPEED;
+
+  scene.addEventListener('wheel', (e) => {
+    e.preventDefault();
+    vel += e.deltaY * 0.002;
+  }, { passive: false });
+
+  let dragX = null;
+  let moved = 0;
+  // 注: setPointerCaptureするとclickがscene側に奪われ、カードのリンクが
+  // 効かなくなる。sceneは全画面なのでキャプチャ無しで追従できる。
+  scene.addEventListener('pointerdown', (e) => {
+    dragX = e.clientX;
+    moved = 0;
+    vel = 0;
+  });
+  scene.addEventListener('pointermove', (e) => {
+    if (dragX == null) return;
+    const dx = e.clientX - dragX;
+    dragX = e.clientX;
+    moved += Math.abs(dx);
+    angle += dx * 0.16;
+    vel = dx * 0.1;
+  });
+  const endDrag = () => { dragX = null; };
+  scene.addEventListener('pointerup', endDrag);
+  scene.addEventListener('pointercancel', endDrag);
+  // ドラッグ直後のクリック暴発を防ぐ
+  cyl.addEventListener('click', (e) => { if (moved > 8) e.preventDefault(); });
+
+  function frame() {
+    if (!cyl.isConnected) return; // 画面遷移で停止
+    vel *= 0.95;
+    if (Math.abs(vel) < BASE_SPEED) vel = BASE_SPEED * (vel < 0 ? -1 : 1);
+    angle += vel;
+    cyl.style.transform = `translateZ(${-radius}px) rotateY(${angle}deg)`;
+    requestAnimationFrame(frame);
+  }
+  requestAnimationFrame(frame);
 }
 
 /* ============ ホーム ============ */

@@ -1,5 +1,5 @@
 // Service Worker — アプリシェルをキャッシュしてオフライン起動を可能にする
-const CACHE_NAME = 'kotonoha-v2';
+const CACHE_NAME = 'kotonoha-v3';
 const ASSETS = [
   './',
   './index.html',
@@ -10,9 +10,18 @@ const ASSETS = [
   './js/youtube.js',
   './js/srs.js',
   './js/gemini.js',
+  './js/landing-images.js',
   './icons/icon-192.png',
   './icons/icon-512.png',
   './icons/maskable-512.png',
+  './assets/landing/01.jpg',
+  './assets/landing/02.jpg',
+  './assets/landing/03.jpg',
+  './assets/landing/04.jpg',
+  './assets/landing/05.jpg',
+  './assets/landing/06.jpg',
+  './assets/landing/07.jpg',
+  './assets/landing/08.jpg',
 ];
 
 self.addEventListener('install', (e) => {
