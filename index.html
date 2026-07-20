@@ -17,6 +17,13 @@
 <body>
   <header class="app-header">
     <a class="brand" href="#/home">言の葉帖</a>
+    <nav class="desktop-nav" aria-label="メインナビゲーション(PC)">
+      <a href="#/home" data-route="home">ホーム</a>
+      <a href="#/gallery" data-route="gallery">一覧</a>
+      <a href="#/review" data-route="review">復習<span class="badge review-badge" hidden></span></a>
+      <a href="#/sort" data-route="sort">仕分け<span class="badge sort-badge" hidden></span></a>
+      <a href="#/capture" data-route="capture" class="nav-capture">＋ 拾う</a>
+    </nav>
     <div class="header-actions">
       <button id="btn-flow" class="icon-btn" title="流し見ビュー" aria-label="流し見ビュー">◈</button>
       <button id="btn-settings" class="icon-btn" title="設定" aria-label="設定">⚙</button>
@@ -29,8 +36,8 @@
     <a href="#/home" data-route="home"><span class="tab-icon">◻</span>ホーム</a>
     <a href="#/gallery" data-route="gallery"><span class="tab-icon">▤</span>一覧</a>
     <a href="#/capture" data-route="capture" class="tab-fab" aria-label="キャプチャ">＋</a>
-    <a href="#/review" data-route="review"><span class="tab-icon">↻</span>復習<span id="review-badge" class="badge" hidden></span></a>
-    <a href="#/sort" data-route="sort"><span class="tab-icon">✎</span>仕分け<span id="sort-badge" class="badge" hidden></span></a>
+    <a href="#/review" data-route="review"><span class="tab-icon">↻</span>復習<span class="badge review-badge" hidden></span></a>
+    <a href="#/sort" data-route="sort"><span class="tab-icon">✎</span>仕分け<span class="badge sort-badge" hidden></span></a>
   </nav>
 
   <dialog id="settings-dialog">

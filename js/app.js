@@ -115,7 +115,8 @@ const routes = {
 async function route() {
   const name = (location.hash.replace(/^#\//, '') || 'home').split('?')[0];
   const render = routes[name] || renderHome;
-  document.querySelectorAll('.tabbar a').forEach((a) => {
+  document.body.dataset.route = name;
+  document.querySelectorAll('.tabbar a, .desktop-nav a').forEach((a) => {
     a.classList.toggle('active', a.dataset.route === name);
   });
   viewEl.innerHTML = '';
@@ -127,12 +128,14 @@ window.addEventListener('hashchange', route);
 
 async function updateBadges() {
   const [due, unsorted] = await Promise.all([db.duePhrases(), db.unsortedPhrases()]);
-  const rb = $('#review-badge');
-  const sb = $('#sort-badge');
-  rb.hidden = due.length === 0;
-  rb.textContent = due.length;
-  sb.hidden = unsorted.length === 0;
-  sb.textContent = unsorted.length;
+  document.querySelectorAll('.review-badge').forEach((el) => {
+    el.hidden = due.length === 0;
+    el.textContent = due.length;
+  });
+  document.querySelectorAll('.sort-badge').forEach((el) => {
+    el.hidden = unsorted.length === 0;
+    el.textContent = unsorted.length;
+  });
 }
 
 /* ============ ホーム ============ */
@@ -178,43 +181,62 @@ async function renderHome() {
 
 /* ============ キャプチャ ============ */
 async function renderCapture() {
-  let ytInfo = null;
-  if (pendingShare) {
-    ytInfo = yt.extractYouTubeShare(pendingShare);
-  }
+  const fromShare = !!pendingShare;
+  let ytInfo = fromShare ? yt.extractYouTubeShare(pendingShare) : null;
+  let meta = null;
 
   viewEl.innerHTML = `
     <form class="capture-form" id="capture-form">
-      ${ytInfo ? `
-        <div class="card video-preview" id="video-preview">
-          <img id="vp-thumb" src="https://i.ytimg.com/vi/${escapeHtml(ytInfo.videoId)}/hqdefault.jpg" alt="">
-          <div class="v-meta">
-            <div class="v-title" id="vp-title">動画情報を取得中…</div>
-            <div class="v-channel" id="vp-channel"></div>
-            ${ytInfo.timestampSeconds != null ? `<span class="time-chip">▸ ${yt.formatTime(ytInfo.timestampSeconds)}</span>` : ''}
-          </div>
-        </div>` : ''}
+      <div class="card video-preview" id="video-preview" hidden>
+        <img id="vp-thumb" src="" alt="">
+        <div class="v-meta">
+          <div class="v-title" id="vp-title"></div>
+          <div class="v-channel" id="vp-channel"></div>
+          <span class="time-chip" id="vp-time" hidden></span>
+        </div>
+      </div>
 
       <div>
-        <label class="field-label" for="phrase-text">気づいたフレーズ ${ytInfo ? '' : '<span class="opt">(これだけでOK)</span>'}</label>
+        <label class="field-label" for="phrase-text">気づいたフレーズ <span class="opt">(これだけでOK)</span></label>
         <textarea id="phrase-text" placeholder="例:「なるほど、その視点は無かったです」" required autofocus></textarea>
       </div>
 
-      ${!ytInfo ? `
-      <div>
+      <div ${fromShare && ytInfo ? 'hidden' : ''}>
+        <label class="field-label" for="yt-url">YouTube URL <span class="opt">(任意・貼り付けで動画情報を自動取得。?t=123s対応)</span></label>
+        <input type="text" id="yt-url" inputmode="url" placeholder="https://www.youtube.com/watch?v=...">
+      </div>
+
+      <div id="note-field">
         <label class="field-label" for="source-note">出典メモ <span class="opt">(任意・「会議」「雑談」など)</span></label>
         <input type="text" id="source-note" placeholder="会議">
-      </div>` : ''}
+      </div>
 
       <button type="submit" class="primary-btn">ストックする</button>
-      <p class="ai-note">タグ付けは不要です。あとで「仕分けタイム」にAIがまとめて提案します。</p>
+      <p class="ai-note">タグ付けは不要です。あとで「仕分けタイム」にAIがまとめて提案します。<span class="kbd-hint"> Ctrl+Enterで保存。</span></p>
     </form>
   `;
 
-  // oEmbedでタイトル・チャンネル・サムネイルを自動取得
-  let meta = null;
-  if (ytInfo) {
-    yt.fetchVideoMeta(ytInfo.videoId, ytInfo.url).then((m) => {
+  // 動画プレビューの表示/非表示とoEmbed取得
+  function applyYtInfo(info) {
+    ytInfo = info;
+    meta = null;
+    const preview = $('#video-preview');
+    if (!info) {
+      preview.hidden = true;
+      $('#note-field').hidden = false;
+      return;
+    }
+    preview.hidden = false;
+    $('#note-field').hidden = true; // 出典は動画情報で埋まる
+    $('#vp-thumb').src = `https://i.ytimg.com/vi/${info.videoId}/hqdefault.jpg`;
+    $('#vp-title').textContent = '動画情報を取得中…';
+    $('#vp-channel').textContent = '';
+    const timeEl = $('#vp-time');
+    timeEl.hidden = info.timestampSeconds == null;
+    if (info.timestampSeconds != null) timeEl.textContent = `▸ ${yt.formatTime(info.timestampSeconds)}`;
+
+    yt.fetchVideoMeta(info.videoId, info.url).then((m) => {
+      if (ytInfo !== info) return; // 取得中にURLが変わっていたら破棄
       meta = m;
       const titleEl = $('#vp-title');
       if (titleEl) {
@@ -224,6 +246,22 @@ async function renderCapture() {
       }
     });
   }
+
+  if (ytInfo) applyYtInfo(ytInfo);
+
+  // PC等でのURL貼り付け導線
+  $('#yt-url').addEventListener('input', (e) => {
+    const raw = (e.target.value.match(/https?:\/\/[^\s]+/) || [e.target.value.trim()])[0];
+    applyYtInfo(raw ? yt.parseYouTubeUrl(raw) : null);
+  });
+
+  // Ctrl+Enter / Cmd+Enter で保存
+  $('#capture-form').addEventListener('keydown', (e) => {
+    if (e.key === 'Enter' && (e.ctrlKey || e.metaKey)) {
+      e.preventDefault();
+      $('#capture-form').requestSubmit();
+    }
+  });
 
   $('#capture-form').addEventListener('submit', async (e) => {
     e.preventDefault();
@@ -298,10 +336,22 @@ async function renderGallery() {
 }
 
 /* ============ 復習(フラッシュカード) ============ */
+let reviewKeyHandler = null;
+
 async function renderReview() {
   const queue = await db.duePhrases();
   let index = 0;
   let usedNow = 0;
+
+  // キーボード操作(PC): ←/1=まだ未使用, →/2=使ってみた
+  if (reviewKeyHandler) document.removeEventListener('keydown', reviewKeyHandler);
+  reviewKeyHandler = (e) => {
+    if (e.target.matches('input, textarea')) return;
+    if (!document.getElementById('btn-used')) return;
+    if (e.key === 'ArrowLeft' || e.key === '1') $('#btn-not-used').click();
+    else if (e.key === 'ArrowRight' || e.key === '2') $('#btn-used').click();
+  };
+  document.addEventListener('keydown', reviewKeyHandler);
 
   function show() {
     if (index >= queue.length) {
@@ -326,6 +376,7 @@ async function renderReview() {
           <button class="ghost-btn" id="btn-not-used">まだ未使用</button>
           <button class="accent-btn" id="btn-used">使ってみた</button>
         </div>
+        <p class="ai-note kbd-hint">← / 1 : まだ未使用 ・ → / 2 : 使ってみた</p>
       </div>
     `;
     $('#btn-not-used').addEventListener('click', async () => {
@@ -594,12 +645,17 @@ async function openFlow() {
   state.raf = requestAnimationFrame(frame);
 
   overlay.querySelector('.flow-close').addEventListener('click', closeFlow);
+
+  const onKey = (e) => { if (e.key === 'Escape') closeFlow(); };
+  document.addEventListener('keydown', onKey);
+  state.cleanupKeys = () => document.removeEventListener('keydown', onKey);
 }
 
 function closeFlow() {
   if (!flowState) return;
   cancelAnimationFrame(flowState.raf);
   flowState.cleanupResize?.();
+  flowState.cleanupKeys?.();
   flowState.overlay.remove();
   flowState = null;
   document.body.style.overflow = '';

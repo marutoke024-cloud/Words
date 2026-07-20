@@ -17,6 +17,8 @@
 
 * { box-sizing: border-box; }
 
+[hidden] { display: none !important; }
+
 html, body {
   margin: 0;
   padding: 0;
@@ -60,6 +62,9 @@ button { font-family: inherit; }
 }
 
 .header-actions { display: flex; gap: 6px; }
+
+/* PC用ヘッダーナビ(880px以上で表示、ボトムタブと入れ替え) */
+.desktop-nav { display: none; }
 
 .icon-btn {
   width: 38px;
@@ -628,6 +633,84 @@ dialog::backdrop { background: rgba(58, 51, 36, 0.35); }
 }
 .settings-row { display: flex; gap: 8px; margin: 12px 0; }
 .settings-row--end { justify-content: flex-end; margin-bottom: 0; }
+
+/* ============ PC(880px以上) ============ */
+.kbd-hint { display: none; }
+
+@media (min-width: 880px) {
+  .tabbar { display: none; }
+
+  .app-header { padding: 14px 28px; }
+
+  .desktop-nav {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    flex: 1;
+    justify-content: center;
+  }
+  .desktop-nav a {
+    position: relative;
+    padding: 8px 16px;
+    border-radius: 999px;
+    text-decoration: none;
+    font-size: 0.85rem;
+    letter-spacing: 0.12em;
+    color: var(--ink-soft);
+  }
+  .desktop-nav a.active {
+    background: var(--washi-deep);
+    color: var(--ink);
+  }
+  .desktop-nav a.nav-capture {
+    margin-left: 10px;
+    background: var(--accent);
+    color: #FAF7EF;
+  }
+  .desktop-nav .badge { top: 0; right: 2px; }
+
+  main {
+    max-width: 720px;
+    padding: 28px 24px 60px;
+  }
+
+  /* ギャラリーは広く使う */
+  body[data-route="gallery"] main { max-width: 1100px; }
+  .masonry { columns: 3; column-gap: 16px; }
+
+  .flash-wrap { max-width: 560px; margin: 0 auto; }
+  .flash-card .f-text { font-size: 1.6rem; }
+
+  .flow-track { width: clamp(320px, 26vw, 420px); }
+
+  .toast { bottom: 48px; }
+
+  .kbd-hint { display: inline; color: var(--ink-faint); }
+
+  .summary-card .num { font-size: 2rem; }
+}
+
+@media (min-width: 1240px) {
+  body[data-route="gallery"] .masonry { columns: 4; }
+}
+
+/* ホバー(マウス環境のみ) */
+@media (hover: hover) and (pointer: fine) {
+  .phrase-card,
+  .recent-item {
+    transition: transform 0.18s ease, box-shadow 0.18s ease;
+  }
+  .phrase-card:hover,
+  .recent-item:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 2px 4px rgba(58, 51, 36, 0.07), 0 10px 24px rgba(58, 51, 36, 0.08);
+  }
+  .primary-btn:hover, .accent-btn:hover { filter: brightness(1.12); }
+  .ghost-btn:hover, .icon-btn:hover { background: var(--washi-deep); }
+  .desktop-nav a:hover { color: var(--ink); }
+  .tag-filter .pill:hover:not(.active) { border-color: var(--ink-faint); }
+  .sort-tags .pill:hover:not(.on) { border-color: var(--ink-faint); }
+}
 
 /* ============ トースト ============ */
 .toast {
