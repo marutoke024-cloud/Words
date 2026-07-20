@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#FAF7EF">
+  <meta name="description" content="見聞きした良い言い回しをワンタップでストックし、間隔反復で定着させるフレーズ帳">
+  <title>言の葉帖 — Phrase Stock</title>
+  <link rel="manifest" href="./manifest.json">
+  <link rel="icon" href="./icons/icon-192.png" type="image/png">
+  <link rel="apple-touch-icon" href="./icons/icon-192.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@400;500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="./css/style.css">
+</head>
+<body>
+  <header class="app-header">
+    <a class="brand" href="#/home">言の葉帖</a>
+    <div class="header-actions">
+      <button id="btn-flow" class="icon-btn" title="流し見ビュー" aria-label="流し見ビュー">◈</button>
+      <button id="btn-settings" class="icon-btn" title="設定" aria-label="設定">⚙</button>
+    </div>
+  </header>
+
+  <main id="view" aria-live="polite"></main>
+
+  <nav class="tabbar" aria-label="メインナビゲーション">
+    <a href="#/home" data-route="home"><span class="tab-icon">◻</span>ホーム</a>
+    <a href="#/gallery" data-route="gallery"><span class="tab-icon">▤</span>一覧</a>
+    <a href="#/capture" data-route="capture" class="tab-fab" aria-label="キャプチャ">＋</a>
+    <a href="#/review" data-route="review"><span class="tab-icon">↻</span>復習<span id="review-badge" class="badge" hidden></span></a>
+    <a href="#/sort" data-route="sort"><span class="tab-icon">✎</span>仕分け<span id="sort-badge" class="badge" hidden></span></a>
+  </nav>
+
+  <dialog id="settings-dialog">
+    <form method="dialog" class="settings-form">
+      <h2>設定</h2>
+      <label for="gemini-key">Gemini APIキー</label>
+      <input type="password" id="gemini-key" placeholder="AIza..." autocomplete="off">
+      <p class="hint">仕分けタイムのタグ自動提案に使います。キーは端末内(localStorage)にのみ保存されます。<a href="https://aistudio.google.com/apikey" target="_blank" rel="noopener">取得はこちら</a></p>
+      <div class="settings-row">
+        <button type="button" id="btn-export" class="ghost-btn">データ書き出し</button>
+        <button type="button" id="btn-import" class="ghost-btn">読み込み</button>
+        <input type="file" id="import-file" accept="application/json" hidden>
+      </div>
+      <p class="hint">Androidでは「ホーム画面に追加」すると、YouTubeアプリの共有メニューから直接この帖に送れるようになります。</p>
+      <div class="settings-row settings-row--end">
+        <button value="cancel" class="ghost-btn">閉じる</button>
+        <button value="save" id="btn-save-settings" class="primary-btn">保存</button>
+      </div>
+    </form>
+  </dialog>
+
+  <div id="toast" class="toast" hidden></div>
+
+  <script type="module" src="./js/app.js"></script>
+</body>
+</html>
