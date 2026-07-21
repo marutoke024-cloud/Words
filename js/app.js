@@ -186,7 +186,7 @@ async function renderCapture() {
   let meta = null;
 
   viewEl.innerHTML = `
-    <form class="capture-form" id="capture-form">
+    <form class="capture-form capture-simple" id="capture-form">
       <div class="card video-preview" id="video-preview" hidden>
         <img id="vp-thumb" src="" alt="">
         <div class="v-meta">
@@ -194,25 +194,19 @@ async function renderCapture() {
           <div class="v-channel" id="vp-channel"></div>
           <span class="time-chip" id="vp-time" hidden></span>
         </div>
+        <button type="button" class="vp-clear" id="vp-clear" aria-label="出典をはずす">×</button>
       </div>
 
-      <div>
-        <label class="field-label" for="phrase-text">気づいたフレーズ <span class="opt">(これだけでOK)</span></label>
-        <textarea id="phrase-text" placeholder="例:「なるほど、その視点は無かったです」" required autofocus></textarea>
-      </div>
+      <textarea id="phrase-text" class="capture-main" required autofocus
+        placeholder="気づいた一言を、そのまま。
+YouTubeのURLを貼れば、出典が自動で付きます。"></textarea>
 
-      <div ${fromShare && ytInfo ? 'hidden' : ''}>
-        <label class="field-label" for="yt-url">YouTube URL <span class="opt">(任意・貼り付けで動画情報を自動取得。?t=123s対応)</span></label>
-        <input type="text" id="yt-url" inputmode="url" placeholder="https://www.youtube.com/watch?v=...">
-      </div>
+      <input type="text" id="source-note" class="note-inline" placeholder="出典メモ(会議・雑談…)" hidden>
 
-      <div id="note-field">
-        <label class="field-label" for="source-note">出典メモ <span class="opt">(任意・「会議」「雑談」など)</span></label>
-        <input type="text" id="source-note" placeholder="会議">
+      <div class="capture-bar">
+        <button type="button" id="btn-add-note" class="linky">＋ 出典メモ</button>
+        <button type="submit" class="primary-btn">拾う</button>
       </div>
-
-      <button type="submit" class="primary-btn">ストックする</button>
-      <p class="ai-note">タグ付けは不要です。あとで「仕分けタイム」にAIがまとめて提案します。<span class="kbd-hint"> Ctrl+Enterで保存。</span></p>
     </form>
   `;
 
@@ -221,13 +215,16 @@ async function renderCapture() {
     ytInfo = info;
     meta = null;
     const preview = $('#video-preview');
+    const noteBtn = $('#btn-add-note');
+    const note = $('#source-note');
     if (!info) {
       preview.hidden = true;
-      $('#note-field').hidden = false;
+      if (noteBtn) noteBtn.hidden = false;
       return;
     }
     preview.hidden = false;
-    $('#note-field').hidden = true; // 出典は動画情報で埋まる
+    if (noteBtn) noteBtn.hidden = true; // 出典は動画情報で埋まる
+    if (note) note.hidden = true;
     $('#vp-thumb').src = `https://i.ytimg.com/vi/${info.videoId}/hqdefault.jpg`;
     $('#vp-title').textContent = '動画情報を取得中…';
     $('#vp-channel').textContent = '';
@@ -249,15 +246,32 @@ async function renderCapture() {
 
   if (ytInfo) applyYtInfo(ytInfo);
 
-  // PC等でのURL貼り付け導線
-  $('#yt-url').addEventListener('input', (e) => {
-    const raw = (e.target.value.match(/https?:\/\/[^\s]+/) || [e.target.value.trim()])[0];
-    applyYtInfo(raw ? yt.parseYouTubeUrl(raw) : null);
+  const textarea = $('#phrase-text');
+
+  // フレーズ欄にYouTube URLを貼ったら、URLを本文から抜き出して出典化する
+  textarea.addEventListener('input', () => {
+    const m = textarea.value.match(/https?:\/\/[^\s]+/);
+    if (!m) return;
+    const info = yt.parseYouTubeUrl(m[0]);
+    if (!info) return;
+    textarea.value = textarea.value.replace(m[0], '').replace(/[ \t]{2,}/g, ' ').replace(/\n{2,}/g, '\n').trim();
+    applyYtInfo(info);
   });
 
-  // Ctrl+Enter / Cmd+Enter で保存
-  $('#capture-form').addEventListener('keydown', (e) => {
-    if (e.key === 'Enter' && (e.ctrlKey || e.metaKey)) {
+  // 出典をはずす
+  $('#vp-clear').addEventListener('click', () => applyYtInfo(null));
+
+  // 出典メモは必要な時だけ開く
+  $('#btn-add-note').addEventListener('click', () => {
+    const note = $('#source-note');
+    note.hidden = false;
+    $('#btn-add-note').hidden = true;
+    note.focus();
+  });
+
+  // Enterで即保存(改行はShift+Enter、日本語変換の確定Enterは除外)
+  textarea.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter' && !e.shiftKey && !e.isComposing && e.keyCode !== 229) {
       e.preventDefault();
       $('#capture-form').requestSubmit();
     }

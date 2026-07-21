@@ -1,5 +1,5 @@
 // Service Worker — アプリシェルをキャッシュしてオフライン起動を可能にする
-const CACHE_NAME = 'kotonoha-v2';
+const CACHE_NAME = 'kotonoha-v4';
 const ASSETS = [
   './',
   './index.html',

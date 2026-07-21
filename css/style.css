@@ -334,6 +334,60 @@ main {
 }
 .field-label .opt { color: var(--ink-faint); font-size: 0.68rem; }
 
+/* --- 1画面1入力(シンプルキャプチャ) --- */
+.capture-simple { gap: 12px; padding-top: 6px; }
+
+.capture-main {
+  min-height: 46vh;
+  font-size: 1.2rem !important;
+  line-height: 2 !important;
+  resize: none !important;
+}
+.capture-main::placeholder {
+  color: var(--ink-faint);
+  line-height: 2;
+}
+
+.capture-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+.capture-bar .primary-btn { padding: 12px 30px; }
+
+.linky {
+  background: none;
+  border: none;
+  font-family: var(--serif);
+  font-size: 0.85rem;
+  letter-spacing: 0.08em;
+  color: var(--ink-soft);
+  cursor: pointer;
+  padding: 8px 4px;
+}
+.linky:active { color: var(--ink); }
+
+.video-preview { position: relative; }
+.vp-clear {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  border: 1px solid var(--line);
+  background: var(--washi);
+  color: var(--ink-soft);
+  font-size: 0.9rem;
+  line-height: 1;
+  cursor: pointer;
+}
+
+@media (min-width: 880px) {
+  .capture-main { min-height: 260px; }
+}
+
 /* ============ ギャラリー ============ */
 .tag-filter {
   display: flex;
