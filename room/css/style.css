@@ -1,10 +1,18 @@
 /* Phrase Room — night-lit, low-poly. Deliberately few words on screen. */
 :root {
   --ink: #efe9ff;
-  --ink-soft: rgba(239, 233, 255, 0.6);
-  --sheet: rgba(30, 20, 58, 0.9);
-  --sheet-solid: #221641;
-  --line: rgba(180, 156, 255, 0.2);
+  --ink-soft: rgba(239, 233, 255, 0.62);
+
+  /* Frosted glass: neutral in hue, so panels read as clear glass over the room
+     rather than as another purple surface. */
+  --glass-base: rgba(14, 12, 22, 0.44);
+  --glass-sheen: linear-gradient(160deg, rgba(255, 255, 255, 0.15), rgba(255, 255, 255, 0.045) 58%, rgba(255, 255, 255, 0.08));
+  --glass-blur: blur(28px) saturate(150%);
+  --glass-line: rgba(255, 255, 255, 0.2);
+  --glass-edge: inset 0 1px 0 rgba(255, 255, 255, 0.3), inset 0 -1px 0 rgba(255, 255, 255, 0.06);
+  --glass-drop: 0 18px 48px rgba(4, 2, 12, 0.5);
+
+  --line: rgba(255, 255, 255, 0.14);
   --accent: #c9b6ff;
   --safe-b: env(safe-area-inset-bottom, 0px);
   --safe-t: env(safe-area-inset-top, 0px);
@@ -119,14 +127,16 @@ body::before {
 .fab,
 .chip-btn {
   position: fixed;
-  border: 1px solid var(--line);
-  background: rgba(44, 30, 82, 0.72);
-  backdrop-filter: blur(14px);
+  border: 1px solid var(--glass-line);
+  background-color: var(--glass-base);
+  background-image: var(--glass-sheen);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
   color: var(--ink);
   border-radius: 999px;
   display: grid;
   place-items: center;
-  box-shadow: 0 10px 28px rgba(8, 4, 20, 0.55);
+  box-shadow: 0 10px 28px rgba(4, 2, 12, 0.5), var(--glass-edge);
   transition: transform 0.18s ease, opacity 0.25s ease;
 }
 
@@ -175,13 +185,15 @@ body::before {
 .hint {
   position: fixed;
   left: 50%;
-  top: calc(26px + var(--safe-t));
-  transform: translate(-50%, -10px);
+  bottom: calc(94px + var(--safe-b));
+  transform: translate(-50%, 10px);
   padding: 9px 16px;
   border-radius: 999px;
-  background: rgba(30, 20, 58, 0.78);
-  border: 1px solid var(--line);
-  backdrop-filter: blur(12px);
+  background-color: var(--glass-base);
+  background-image: var(--glass-sheen);
+  border: 1px solid var(--glass-line);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
   font-size: 13px;
   letter-spacing: 0.04em;
   color: var(--ink-soft);
@@ -204,11 +216,13 @@ body::before {
   max-height: 68vh;
   display: flex;
   flex-direction: column;
-  background: var(--sheet);
-  backdrop-filter: blur(22px);
-  border-top: 1px solid var(--line);
+  background-color: var(--glass-base);
+  background-image: var(--glass-sheen);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+  border-top: 1px solid var(--glass-line);
   border-radius: 26px 26px 0 0;
-  box-shadow: 0 -18px 50px rgba(6, 3, 16, 0.6);
+  box-shadow: 0 -18px 50px rgba(4, 2, 12, 0.5), var(--glass-edge);
   transform: translateY(102%);
   transition: transform 0.42s cubic-bezier(0.22, 1, 0.3, 1);
   z-index: 30;
@@ -278,10 +292,10 @@ body::before {
 
 /* ---------- cards ---------- */
 .card {
-  border: 1px solid var(--line);
-  border-left: 3px solid var(--accent);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-left: 2px solid var(--accent);
   border-radius: 16px;
-  background: rgba(255, 255, 255, 0.045);
+  background: rgba(255, 255, 255, 0.055);
   padding: 14px 14px 8px;
   animation: card-in 0.45s cubic-bezier(0.2, 0.9, 0.25, 1) both;
 }
@@ -402,8 +416,7 @@ body::before {
   display: grid;
   place-items: center;
   padding: 22px;
-  background: rgba(9, 5, 20, 0.55);
-  backdrop-filter: blur(6px);
+  background: rgba(6, 4, 12, 0.4);
   opacity: 0;
   transition: opacity 0.3s ease;
   z-index: 35;
@@ -415,11 +428,13 @@ body::before {
 
 .detail-card {
   width: min(440px, 100%);
-  border-radius: 22px;
-  border: 1px solid var(--line);
-  border-top: 3px solid var(--accent);
-  background: var(--sheet-solid);
-  box-shadow: 0 24px 60px rgba(4, 2, 12, 0.65);
+  border-radius: 24px;
+  border: 1px solid var(--glass-line);
+  background-color: var(--glass-base);
+  background-image: var(--glass-sheen);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+  box-shadow: var(--glass-drop), var(--glass-edge);
   padding: 12px 18px 24px;
   transform: translateY(18px) scale(0.96);
   opacity: 0;
@@ -457,12 +472,13 @@ body::before {
 
 .word-popup {
   position: fixed;
-  border-radius: 18px;
-  border: 1px solid var(--line);
-  border-top: 2px solid var(--accent);
-  background: rgba(38, 26, 70, 0.96);
-  backdrop-filter: blur(18px);
-  box-shadow: 0 18px 44px rgba(4, 2, 12, 0.6);
+  border-radius: 20px;
+  border: 1px solid var(--glass-line);
+  background-color: rgba(14, 12, 22, 0.52);
+  background-image: var(--glass-sheen);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+  box-shadow: var(--glass-drop), var(--glass-edge);
   padding: 14px 16px 12px;
   opacity: 0;
   transform: translateY(10px) scale(0.94);
@@ -528,8 +544,8 @@ body::before {
   margin-top: 10px;
   padding: 10px 12px;
   border-radius: 12px;
-  border: 1px solid var(--line);
-  background: rgba(12, 7, 26, 0.6);
+  border: 1px solid var(--glass-line);
+  background: rgba(255, 255, 255, 0.07);
   color: var(--ink);
   font: inherit;
   font-size: 15px;
@@ -597,8 +613,7 @@ body::before {
   inset: 0;
   display: flex;
   align-items: flex-end;
-  background: rgba(9, 5, 20, 0.6);
-  backdrop-filter: blur(8px);
+  background: rgba(6, 4, 12, 0.42);
   opacity: 0;
   transition: opacity 0.28s ease;
   z-index: 40;
@@ -613,9 +628,13 @@ body::before {
   max-height: 88vh;
   overflow-y: auto;
   touch-action: pan-y;
-  background: var(--sheet-solid);
+  background-color: var(--glass-base);
+  background-image: var(--glass-sheen);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
   border-radius: 26px 26px 0 0;
-  border-top: 1px solid var(--line);
+  border-top: 1px solid var(--glass-line);
+  box-shadow: var(--glass-drop), var(--glass-edge);
   padding: 18px 18px calc(24px + var(--safe-b));
   transform: translateY(100%);
   transition: transform 0.42s cubic-bezier(0.22, 1, 0.3, 1);
@@ -642,8 +661,8 @@ body::before {
 .ed-input {
   width: 100%;
   border-radius: 16px;
-  border: 1px solid var(--line);
-  background: rgba(12, 7, 26, 0.55);
+  border: 1px solid var(--glass-line);
+  background: rgba(255, 255, 255, 0.06);
   color: var(--ink);
   font: inherit;
   font-size: 18px;
@@ -666,8 +685,8 @@ body::before {
 
 .ed-chip {
   flex: 1;
-  border: 1px solid var(--line);
-  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.13);
+  background: rgba(255, 255, 255, 0.06);
   border-radius: 14px;
   padding: 10px 6px;
   color: var(--ink-soft);
@@ -737,19 +756,20 @@ body::before {
   position: fixed;
   left: 12px;
   right: 12px;
-  bottom: calc(96px + var(--safe-b));
+  top: calc(12px + var(--safe-t));
   display: flex;
   align-items: center;
   gap: 10px;
-  padding: 11px 12px;
-  border-radius: 16px;
-  border: 1px solid var(--line);
-  border-left: 3px solid var(--accent);
-  background: rgba(32, 21, 62, 0.92);
-  backdrop-filter: blur(16px);
-  box-shadow: 0 14px 34px rgba(5, 2, 14, 0.5);
+  padding: 12px 12px;
+  border-radius: 18px;
+  border: 1px solid var(--glass-line);
+  background-color: var(--glass-base);
+  background-image: var(--glass-sheen);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+  box-shadow: var(--glass-drop), var(--glass-edge);
   opacity: 0;
-  transform: translateY(18px);
+  transform: translateY(-20px);
   transition: opacity 0.4s ease, transform 0.45s cubic-bezier(0.2, 1, 0.3, 1);
   z-index: 28;
 }
@@ -804,6 +824,7 @@ button {
     left: auto;
     width: 380px;
     right: 24px;
+    top: calc(20px + var(--safe-t));
   }
 }
 
