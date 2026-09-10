@@ -4,7 +4,8 @@ Global会議で「いつか使いたい」と思ったビジネス英語フレ�
 しまっておくための個人用アプリ。学習アプリではなく **記録簿（ログ）** なので、
 ドリル・スコア・テストの類は一切ありません。
 
-公開URL（Pagesデプロイ後）: `https://<user>.github.io/Words/room/`
+公開URL（本ブランチをマージ後、Pagesデプロイで有効になります）:
+`https://marutoke024-cloud.github.io/Words/room/`
 
 ## 体験の中心：3Dルーム
 

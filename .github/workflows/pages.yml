@@ -2,7 +2,7 @@ name: Deploy to GitHub Pages
 
 on:
   push:
-    branches: [claude/phrase-stock-app-76kpdf, claude/brave-euler-vbmw1j]
+    branches: [claude/phrase-stock-app-76kpdf]
   workflow_dispatch:
 
 permissions:
