@@ -100,3 +100,10 @@ js/srs.js         間隔反復ロジック
 js/gemini.js      タグ自動提案
 icons/            PWAアイコン
 ```
+
+---
+
+## 同梱アプリ: Phrase Room（`room/`）
+
+Global会議用のビジネス英語フレーズを、ローポリの自室に置いた家具（テレビ／本棚／水槽）に
+しまっていく3Dの記録アプリ。公開後は `/room/` で開けます。詳細は [`room/README.md`](room/README.md)。
