@@ -1,5 +1,5 @@
-/* Phrase Room service worker — cache-first shell so the room opens offline. */
-const CACHE = 'phrase-room-v3';
+/* Knowledge Room service worker — cache-first shell so the room opens offline. */
+const CACHE = 'phrase-room-v4';
 const SHELL = [
   './',
   './index.html',
