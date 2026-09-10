@@ -332,12 +332,6 @@ export function buildProps(scene) {
   drums.position.set(-2.4, 0, 3.3);
   props.add(drums);
 
-  // Amps behind the drums
-  props.add(
-    box(1.5, 1.7, 0.9, 0x38325a, -4.4, 0.85, 3.4),
-    box(1.4, 0.2, 0.85, PALETTE.lampWarm, -4.4, 1.6, 3.4, { material: glowMat(PALETTE.lampWarm, 0.55) })
-  );
-
   // Keyboard on a stand, front-right
   const keys = group(
     box(2.3, 0.16, 0.62, 0x2f2a4d, 0, 1.15, 0),

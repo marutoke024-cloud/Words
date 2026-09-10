@@ -1,5 +1,5 @@
 /* Phrase Room service worker — cache-first shell so the room opens offline. */
-const CACHE = 'phrase-room-v1';
+const CACHE = 'phrase-room-v2';
 const SHELL = [
   './',
   './index.html',
