@@ -64,6 +64,7 @@ export function createRoom(canvas, { onPickCategory, onPickPhrase } = {}) {
 
   const raycaster = new THREE.Raycaster();
   const ndc = new THREE.Vector2();
+  let aquariumFocused = false;
 
   const controls = createControls(camera, canvas, {
     onTap: (clientX, clientY) => {
@@ -75,8 +76,10 @@ export function createRoom(canvas, { onPickCategory, onPickPhrase } = {}) {
 
       // Close to the tank a fish wins over the glass it swims behind; from
       // across the room the tank itself is the target, so a stray tap flies
-      // there instead of opening a random phrase.
-      if (camera.position.distanceTo(tankCentre) < 11) {
+      // there instead of opening a random phrase. The threshold follows the
+      // tank's own close-up distance, which changes with the screen shape.
+      const tankRange = tank.focus.dist * controls.state.focusFit * 1.35;
+      if (aquariumFocused || camera.position.distanceTo(tankCentre) < tankRange) {
         for (const hit of hits) {
           const id = lookup(hit.object, 'phraseId');
           if (id) {
@@ -112,8 +115,12 @@ export function createRoom(canvas, { onPickCategory, onPickPhrase } = {}) {
     camera.aspect = w / h;
     camera.updateProjectionMatrix();
     // A phone held upright is much narrower than it is tall: back the camera off
-    // so the whole diorama still fits across the screen.
-    controls?.setFit(THREE.MathUtils.clamp(1.12 / camera.aspect, 1, 2.7));
+    // so the diorama still reads across the screen. The room view sits closer
+    // than the close-ups need to, so the two are scaled separately.
+    controls?.setFit(
+      THREE.MathUtils.clamp(0.78 / camera.aspect, 1, 2.0),
+      THREE.MathUtils.clamp(1.12 / camera.aspect, 1, 2.7)
+    );
   }
   window.addEventListener('resize', resize);
   window.addEventListener('orientationchange', () => setTimeout(resize, 120));
@@ -156,9 +163,11 @@ export function createRoom(canvas, { onPickCategory, onPickPhrase } = {}) {
     focusCategory(id) {
       const item = byCategory.get(id);
       if (!item) return;
+      aquariumFocused = id === 'aquarium';
       controls.flyTo(item.focus);
     },
     resetView() {
+      aquariumFocused = false;
       controls.flyHome();
     },
     syncFavorites(phrases) {

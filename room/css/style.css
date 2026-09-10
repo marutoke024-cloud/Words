@@ -5,12 +5,29 @@
 
   /* Frosted glass: neutral in hue, so panels read as clear glass over the room
      rather than as another purple surface. */
-  --glass-base: rgba(14, 12, 22, 0.44);
-  --glass-sheen: linear-gradient(160deg, rgba(255, 255, 255, 0.15), rgba(255, 255, 255, 0.045) 58%, rgba(255, 255, 255, 0.08));
-  --glass-blur: blur(28px) saturate(150%);
-  --glass-line: rgba(255, 255, 255, 0.2);
-  --glass-edge: inset 0 1px 0 rgba(255, 255, 255, 0.3), inset 0 -1px 0 rgba(255, 255, 255, 0.06);
-  --glass-drop: 0 18px 48px rgba(4, 2, 12, 0.5);
+  --glass-base: rgba(16, 14, 26, 0.22);
+  --glass-sheen: linear-gradient(
+    148deg,
+    rgba(255, 255, 255, 0.28) 0%,
+    rgba(255, 255, 255, 0.07) 24%,
+    rgba(255, 255, 255, 0.015) 50%,
+    rgba(255, 255, 255, 0.1) 76%,
+    rgba(255, 255, 255, 0.24) 100%
+  );
+  --glass-blur: blur(30px) saturate(185%) brightness(1.05);
+  --glass-line: rgba(255, 255, 255, 0.26);
+  --glass-edge: inset 0 1px 0 rgba(255, 255, 255, 0.5), inset 0 -1px 0 rgba(255, 255, 255, 0.12),
+    inset 1px 0 0 rgba(255, 255, 255, 0.14), inset -1px 0 0 rgba(255, 255, 255, 0.14);
+  --glass-drop: 0 20px 52px rgba(3, 2, 10, 0.46);
+  /* Chrome-like rim: a bright edge that catches "light" on two corners. */
+  --glass-rim: linear-gradient(
+    140deg,
+    rgba(255, 255, 255, 0.92) 0%,
+    rgba(198, 224, 255, 0.3) 20%,
+    rgba(255, 255, 255, 0.03) 45%,
+    rgba(255, 214, 236, 0.26) 68%,
+    rgba(255, 255, 255, 0.8) 100%
+  );
 
   --line: rgba(255, 255, 255, 0.14);
   --accent: #c9b6ff;
@@ -123,6 +140,64 @@ body::before {
   }
 }
 
+/* A polished rim on every glass surface: a gradient ring masked to the border. */
+.sheet::after,
+.detail-card::after,
+.word-popup::after,
+.toast::after,
+.hint::after,
+.chip-btn::after,
+.fab::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  padding: 1.2px;
+  background: var(--glass-rim);
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  mask-composite: exclude;
+  pointer-events: none;
+}
+
+/* Text stays legible even where the room behind the glass is bright. */
+.phrase-text,
+.toast-text,
+.wp-meaning,
+.wp-word,
+.sheet-titles h2,
+.ed-input,
+.ed-preview {
+  text-shadow: 0 1px 3px rgba(6, 3, 16, 0.5);
+}
+
+/* ---------- low-poly icons ---------- */
+.ico {
+  display: inline-flex;
+  line-height: 0;
+}
+
+.ico svg {
+  width: 1em;
+  height: 1em;
+  display: block;
+  filter: drop-shadow(0 1px 2px rgba(4, 2, 12, 0.55));
+}
+
+.icon-btn .ico {
+  font-size: 17px;
+}
+
+.sheet-glyph {
+  color: var(--accent);
+}
+
+.hint-glyph {
+  font-size: 15px;
+  color: var(--accent);
+}
+
 /* ---------- floating chrome ---------- */
 .fab,
 .chip-btn {
@@ -187,6 +262,9 @@ body::before {
   left: 50%;
   bottom: calc(94px + var(--safe-b));
   transform: translate(-50%, 10px);
+  display: flex;
+  align-items: center;
+  gap: 8px;
   padding: 9px 16px;
   border-radius: 999px;
   background-color: var(--glass-base);
@@ -254,7 +332,8 @@ body::before {
 
 .sheet-glyph {
   font-size: 26px;
-  filter: drop-shadow(0 0 12px var(--accent));
+  color: var(--accent);
+  filter: drop-shadow(0 0 10px color-mix(in srgb, var(--accent) 60%, transparent));
 }
 
 .sheet-titles h2 {
@@ -427,6 +506,7 @@ body::before {
 }
 
 .detail-card {
+  position: relative;
   width: min(440px, 100%);
   border-radius: 24px;
   border: 1px solid var(--glass-line);
@@ -455,7 +535,8 @@ body::before {
 
 .detail-glyph {
   font-size: 24px;
-  filter: drop-shadow(0 0 14px var(--accent));
+  color: var(--accent);
+  filter: drop-shadow(0 0 12px color-mix(in srgb, var(--accent) 60%, transparent));
 }
 
 .detail-card .phrase-text {
@@ -474,7 +555,7 @@ body::before {
   position: fixed;
   border-radius: 20px;
   border: 1px solid var(--glass-line);
-  background-color: rgba(14, 12, 22, 0.52);
+  background-color: rgba(16, 14, 26, 0.3);
   background-image: var(--glass-sheen);
   backdrop-filter: var(--glass-blur);
   -webkit-backdrop-filter: var(--glass-blur);
@@ -697,7 +778,8 @@ body::before {
 }
 
 .ed-chip-glyph {
-  font-size: 21px;
+  font-size: 22px;
+  color: var(--accent);
 }
 
 .ed-chip-label {
@@ -780,8 +862,9 @@ body::before {
 }
 
 .toast-glyph {
-  font-size: 19px;
-  filter: drop-shadow(0 0 10px var(--accent));
+  font-size: 20px;
+  color: var(--accent);
+  filter: drop-shadow(0 0 10px color-mix(in srgb, var(--accent) 60%, transparent));
 }
 
 .toast-text {

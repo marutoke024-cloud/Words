@@ -2,6 +2,7 @@ import { el, clear, renderTokens } from './dom.js';
 import { CATEGORIES, getCategory } from '../data/categories.js';
 import { tokenize, normalizeWord } from '../data/store.js';
 import { openWordPopup, close as closeWordPopup } from './wordPopup.js';
+import { iconEl } from './icons.js';
 
 /**
  * Capture screen. One field for the phrase, one row of furniture glyphs for
@@ -54,7 +55,7 @@ export function createEditor(root, { onSave }) {
             renderPreview();
           }
         },
-        el('span', { class: 'ed-chip-glyph', text: c.glyph }),
+        iconEl(c.icon, 'ed-chip-glyph'),
         el('span', { class: 'ed-chip-label', text: c.label })
       );
       chips.append(b);

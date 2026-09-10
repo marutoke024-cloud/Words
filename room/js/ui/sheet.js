@@ -1,6 +1,7 @@
 import { el, clear } from './dom.js';
 import { getCategory } from '../data/categories.js';
 import { phraseCard } from './phraseView.js';
+import { iconEl } from './icons.js';
 import { close as closeWordPopup } from './wordPopup.js';
 
 /**
@@ -31,7 +32,7 @@ export function createSheet(root, { onClose, onAdd, onSaveNote, onRemoveNote, on
     node.style.setProperty('--accent', cat.accent);
 
     clear(head).append(
-      el('span', { class: 'sheet-glyph', text: cat.glyph }),
+      iconEl(cat.icon, 'sheet-glyph'),
       el('div', { class: 'sheet-titles' }, el('h2', { text: cat.label }), el('span', { class: 'sheet-hint', text: cat.hint })),
       el('span', { class: 'sheet-count', text: String(phrases.length) }),
       el('button', { class: 'icon-btn', 'aria-label': 'Close', onclick: close }, '✕')
