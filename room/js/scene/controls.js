@@ -13,8 +13,11 @@ export function createControls(camera, dom, { onTap }) {
   const state = {
     yaw: HOME.yaw,
     pitch: HOME.pitch,
-    /** Tall, narrow screens need to stand further back to frame the same room. */
+    /** Tall, narrow screens stand further back. The room view and the furniture
+        close-ups scale independently so a closer default does not also glue the
+        camera to the TV. */
     fit: 1,
+    focusFit: 1,
     distance: HOME.distance,
     target: HOME.target.clone(),
     vYaw: 0,
@@ -112,7 +115,7 @@ export function createControls(camera, dom, { onTap }) {
     const d = dir.clone().normalize();
     const yaw = Math.atan2(d.x, d.z);
     const pitch = clamp(Math.asin(d.y), 0.14, 1.18);
-    tweenTo({ yaw, pitch, distance: dist * state.fit, target: target.clone() }, duration);
+    tweenTo({ yaw, pitch, distance: dist * state.focusFit, target: target.clone() }, duration);
   }
 
   function flyHome(duration = 950) {
@@ -120,7 +123,8 @@ export function createControls(camera, dom, { onTap }) {
   }
 
   /** Called on resize: keeps the framing constant across aspect ratios. */
-  function setFit(fit) {
+  function setFit(fit, focusFit = fit) {
+    state.focusFit = focusFit;
     if (Math.abs(fit - state.fit) < 0.001) return;
     const ratio = fit / state.fit;
     state.fit = fit;

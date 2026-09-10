@@ -11,7 +11,7 @@ export const CATEGORIES = [
     id: 'tv',
     label: 'Small Talk',
     hint: 'casual',
-    glyph: '📺',
+    icon: 'tv',
     accent: '#7fd6ff',
     /** how the aquarium-style detail view behaves: "list" | "swim" */
     mode: 'list'
@@ -20,7 +20,7 @@ export const CATEGORIES = [
     id: 'bookshelf',
     label: 'Formal',
     hint: 'meetings',
-    glyph: '📚',
+    icon: 'bookshelf',
     accent: '#ffc27f',
     mode: 'list'
   },
@@ -28,7 +28,7 @@ export const CATEGORIES = [
     id: 'aquarium',
     label: 'Favorites',
     hint: 'one fish, one phrase',
-    glyph: '🐟',
+    icon: 'fish',
     accent: '#8affd1',
     mode: 'swim'
   }

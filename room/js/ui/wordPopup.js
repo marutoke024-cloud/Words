@@ -1,5 +1,7 @@
 import { el, clear, haptic } from './dom.js';
 
+import { iconEl } from './icons.js';
+
 const ICONS = ['💬', '🤝', '💡', '📌', '⏱️', '📈', '🔁', '🎯', '⚖️', '🚢', '😈', '👂', '🅿️', '📊', '🧱', '🌍'];
 
 let layer = null;
@@ -76,7 +78,7 @@ export function openWordPopup(anchor, { word, note, accent = '#c9b6ff', onSave, 
               close();
             }
           },
-          '🗑'
+          iconEl('trash')
         )
       )
     );

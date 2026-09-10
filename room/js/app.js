@@ -5,7 +5,8 @@ import { createSheet } from './ui/sheet.js';
 import { createEditor } from './ui/editor.js';
 import { createDetail } from './ui/detail.js';
 import { createToast, pickOfTheMoment } from './ui/toast.js';
-import { el, haptic } from './ui/dom.js';
+import { el, clear, haptic } from './ui/dom.js';
+import { iconEl } from './ui/icons.js';
 import { close as closeWordPopup, isOpen as wordPopupOpen } from './ui/wordPopup.js';
 
 const ui = document.getElementById('ui');
@@ -71,8 +72,10 @@ const toast = createToast(ui, {
   }
 });
 
-function showHint(text, ms = 2600) {
-  hint.textContent = text;
+function showHint(text, icon, ms = 2600) {
+  clear(hint);
+  if (icon) hint.append(iconEl(icon, 'hint-glyph'));
+  hint.append(el('span', { text }));
   hint.hidden = false;
   requestAnimationFrame(() => hint.classList.add('is-in'));
   clearTimeout(showHint.timer);
@@ -95,7 +98,7 @@ function openCategory(categoryId) {
   if (cat.mode === 'swim') {
     // In the tank the fish themselves are the list.
     listBtn.hidden = false;
-    showHint(`${cat.glyph}  tap a fish`);
+    showHint('tap a fish', cat.icon);
     sheet.close();
     return;
   }

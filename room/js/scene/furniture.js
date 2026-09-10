@@ -279,9 +279,11 @@ export function buildProps(scene) {
   desk.position.set(-2.6, 0, -2.4);
   props.add(desk);
 
-  const greenScreen = box(3.4, 2.6, 0.12, 0x4fae5f, -3.4, 2.4, -4.4);
-  greenScreen.material = mat(0x4fae5f, { emissive: 0x2f7a3c, emissiveIntensity: 0.35 });
-  props.add(greenScreen);
+  // A painting of the room-mate, propped where the green screen used to be.
+  const canvasFrame = box(3.56, 2.76, 0.12, 0x8a6a4a, -3.4, 2.4, -4.42);
+  const painting = posterMesh(3.3, 2.5, drawDino);
+  painting.position.set(-3.4, 2.4, -4.34);
+  props.add(canvasFrame, painting);
 
   const monitor = group(
     box(1.1, 0.75, 0.1, 0x2a2440, 0, 0.38, 0),
@@ -465,6 +467,71 @@ function drawFishArt(ctx, w, h) {
   ctx.beginPath();
   ctx.arc(w * 0.64, h * 0.37, w * 0.03, 0, Math.PI * 2);
   ctx.fill();
+}
+
+/** Low-poly portrait of the mascot, painted on the studio canvas. */
+function drawDino(ctx, w, h) {
+  const sky = ctx.createLinearGradient(0, 0, 0, h);
+  sky.addColorStop(0, '#2b2a63');
+  sky.addColorStop(0.62, '#3d3a72');
+  sky.addColorStop(1, '#4a3f6b');
+  ctx.fillStyle = sky;
+  ctx.fillRect(0, 0, w, h);
+
+  const poly = (color, pts) => {
+    ctx.fillStyle = color;
+    ctx.beginPath();
+    pts.forEach(([x, y], i) => (i ? ctx.lineTo(x * w, y * h) : ctx.moveTo(x * w, y * h)));
+    ctx.closePath();
+    ctx.fill();
+  };
+
+  // Moon
+  ctx.fillStyle = '#f3edd2';
+  ctx.beginPath();
+  ctx.arc(w * 0.8, h * 0.22, h * 0.09, 0, Math.PI * 2);
+  ctx.fill();
+
+  // Ground, in two facets
+  poly('#3a5a52', [[0, 0.74], [0.42, 0.68], [1, 0.76], [1, 1], [0, 1]]);
+  poly('#2e4a45', [[0, 0.86], [0.5, 0.8], [1, 0.88], [1, 1], [0, 1]]);
+
+  const LIGHT = '#84cf63';
+  const MID = '#5da34c';
+  const DARK = '#3f7a3c';
+
+  // Tail
+  poly(MID, [[0.78, 0.56], [0.99, 0.46], [0.99, 0.54], [0.82, 0.68]]);
+  // Body
+  poly(MID, [[0.34, 0.54], [0.58, 0.48], [0.8, 0.55], [0.84, 0.67], [0.6, 0.75], [0.37, 0.7]]);
+  // Belly facet
+  poly(LIGHT, [[0.4, 0.66], [0.62, 0.72], [0.78, 0.66], [0.6, 0.75], [0.42, 0.72]]);
+  // Legs
+  poly(DARK, [[0.44, 0.72], [0.54, 0.71], [0.55, 0.9], [0.43, 0.9]]);
+  poly(DARK, [[0.64, 0.7], [0.73, 0.68], [0.74, 0.87], [0.63, 0.88]]);
+  poly(DARK, [[0.38, 0.9], [0.58, 0.9], [0.58, 0.94], [0.36, 0.94]]);
+  poly(DARK, [[0.6, 0.87], [0.78, 0.87], [0.78, 0.91], [0.58, 0.91]]);
+  // Neck + head
+  poly(MID, [[0.32, 0.56], [0.26, 0.36], [0.4, 0.32], [0.44, 0.52]]);
+  poly(LIGHT, [[0.3, 0.38], [0.16, 0.3], [0.18, 0.2], [0.34, 0.18], [0.43, 0.28], [0.4, 0.36]]);
+  poly(DARK, [[0.16, 0.3], [0.06, 0.29], [0.07, 0.22], [0.18, 0.21]]);
+  // Back spikes
+  [[0.42, 0.3], [0.5, 0.44], [0.6, 0.47], [0.7, 0.5]].forEach(([x, y]) => {
+    poly('#c9e6a4', [[x, y], [x + 0.05, y - 0.07], [x + 0.08, y + 0.01]]);
+  });
+  // Eye
+  ctx.fillStyle = '#1d2a1c';
+  ctx.beginPath();
+  ctx.arc(w * 0.26, h * 0.27, h * 0.022, 0, Math.PI * 2);
+  ctx.fill();
+  ctx.fillStyle = '#ffffff';
+  ctx.beginPath();
+  ctx.arc(w * 0.252, h * 0.262, h * 0.008, 0, Math.PI * 2);
+  ctx.fill();
+
+  // Foliage in the foreground corners
+  poly('#2c4a3e', [[0, 0.82], [0.08, 0.62], [0.17, 0.84]]);
+  poly('#356152', [[0.86, 0.9], [0.94, 0.7], [1, 0.92]]);
 }
 
 function drawUfo(ctx, w, h) {

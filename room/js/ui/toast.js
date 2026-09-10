@@ -1,5 +1,6 @@
 import { el, clear } from './dom.js';
 import { getCategory } from '../data/categories.js';
+import { iconEl } from './icons.js';
 
 /**
  * "Phrase of the moment" — a small, non-blocking pick that changes with the
@@ -39,7 +40,7 @@ export function createToast(root, { onOpen }) {
     clear(node);
     node.style.setProperty('--accent', cat.accent);
     node.append(
-      el('span', { class: 'toast-glyph', text: cat.glyph }),
+      iconEl(cat.icon, 'toast-glyph'),
       el('span', { class: 'toast-text', text: phrase.text }),
       el(
         'button',

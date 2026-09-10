@@ -2,6 +2,7 @@ import { el, renderTokens } from './dom.js';
 import { tokenize, findNote } from '../data/store.js';
 import { getCategory } from '../data/categories.js';
 import { openWordPopup } from './wordPopup.js';
+import { iconEl } from './icons.js';
 
 /**
  * A phrase, rendered word by word. Every word is tappable: one with a saved
@@ -54,12 +55,12 @@ export function phraseCard(phrase, handlers = {}) {
       el(
         'button',
         { class: 'icon-btn', 'aria-label': 'Move to favorites', onclick: () => handlers.onFavorite?.(phrase.id) },
-        '🐟'
+        iconEl('fish')
       )
     );
   }
   foot.append(
-    el('button', { class: 'icon-btn', 'aria-label': 'Delete', onclick: () => handlers.onDelete?.(phrase.id) }, '🗑')
+    el('button', { class: 'icon-btn', 'aria-label': 'Delete', onclick: () => handlers.onDelete?.(phrase.id) }, iconEl('trash'))
   );
   card.append(foot);
   return card;
