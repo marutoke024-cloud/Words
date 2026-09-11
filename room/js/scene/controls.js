@@ -77,7 +77,7 @@ export function createControls(camera, dom, { onTap }) {
     if (pointers.size === 1) {
       state.tween = null;
       state.vYaw = -dx * 0.005;
-      state.vPitch = -dy * 0.004;
+      state.vPitch = dy * 0.004; // dragging down tips the view up
       state.yaw = clamp(state.yaw + state.vYaw, -0.25, 1.85);
       state.pitch = clamp(state.pitch + state.vPitch, 0.14, 1.18);
       apply();

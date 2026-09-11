@@ -126,7 +126,7 @@ export function createEditor(root, { onSave }) {
       renderPreview();
       node.hidden = false;
       requestAnimationFrame(() => node.classList.add('is-in'));
-      setTimeout(() => input.focus(), 220);
+      // No autofocus: the keyboard should only appear once the field is tapped.
     },
     close,
     get isOpen() {

@@ -225,10 +225,10 @@ body::before {
   bottom: calc(22px + var(--safe-b));
   width: 60px;
   height: 60px;
-  font-size: 30px;
+  font-size: 32px;
   font-weight: 300;
-  background: linear-gradient(160deg, rgba(160, 122, 255, 0.9), rgba(96, 70, 190, 0.85));
-  border-color: rgba(214, 196, 255, 0.35);
+  color: #f4efff;
+  text-shadow: 0 1px 6px rgba(6, 3, 18, 0.6);
   z-index: 20;
 }
 
@@ -283,6 +283,81 @@ body::before {
 .hint.is-in {
   opacity: 1;
   transform: translate(-50%, 0);
+}
+
+/* ---------- title ---------- */
+.logo {
+  position: fixed;
+  top: calc(88px + var(--safe-t));
+  left: 0;
+  right: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 5px;
+  pointer-events: none;
+  user-select: none;
+  z-index: 5;
+  animation: logo-in 0.9s 0.2s cubic-bezier(0.2, 1, 0.3, 1) both;
+}
+
+@keyframes logo-in {
+  from {
+    opacity: 0;
+    transform: translateY(-10px) scale(0.94);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.logo-top {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.46em;
+  text-indent: 0.46em;
+  text-transform: uppercase;
+  color: rgba(228, 218, 255, 0.7);
+  text-shadow: 0 1px 4px rgba(6, 3, 18, 0.7);
+}
+
+.logo-top::before,
+.logo-top::after {
+  content: "";
+  width: 24px;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(228, 218, 255, 0.55));
+}
+
+.logo-top::after {
+  transform: scaleX(-1);
+}
+
+/* Two hard-edged colour bands read as the lit and shaded faces of one solid. */
+.logo-main {
+  font-size: 42px;
+  font-weight: 800;
+  letter-spacing: 0.16em;
+  text-indent: 0.16em;
+  text-transform: uppercase;
+  line-height: 1;
+  background-image: linear-gradient(
+    177deg,
+    #ffffff 0%,
+    #e4dcff 43%,
+    #a996f0 43.6%,
+    #7a63cc 76%,
+    #9c86e4 100%
+  );
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  filter: drop-shadow(0 2px 0 rgba(60, 45, 110, 0.95)) drop-shadow(0 4px 0 rgba(36, 26, 72, 0.92))
+    drop-shadow(0 12px 22px rgba(5, 2, 16, 0.65));
 }
 
 /* ---------- bottom sheet ---------- */

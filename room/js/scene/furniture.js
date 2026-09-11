@@ -444,9 +444,9 @@ function drawLogo(ctx, w, h) {
   ctx.arc(w / 2, h * 0.46, h * 0.09, 0.2, Math.PI - 0.2);
   ctx.stroke();
   ctx.fillStyle = '#b7aee8';
-  ctx.font = `${Math.round(h * 0.11)}px sans-serif`;
+  ctx.font = `${Math.round(h * 0.1)}px sans-serif`;
   ctx.textAlign = 'center';
-  ctx.fillText('PHRASE ROOM', w / 2, h * 0.82);
+  ctx.fillText('KNOWLEDGE ROOM', w / 2, h * 0.82);
 }
 
 function drawFishArt(ctx, w, h) {

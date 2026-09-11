@@ -13,11 +13,17 @@ const ui = document.getElementById('ui');
 const canvas = document.getElementById('stage');
 const loader = document.getElementById('loader');
 
+const logo = el(
+  'div',
+  { class: 'logo', 'aria-hidden': 'true' },
+  el('span', { class: 'logo-top', text: 'Knowledge' }),
+  el('span', { class: 'logo-main', text: 'Room' })
+);
 const hint = el('div', { class: 'hint', hidden: true });
 const homeBtn = el('button', { class: 'chip-btn home-btn', 'aria-label': 'Back to the room', hidden: true }, '⌂');
 const listBtn = el('button', { class: 'chip-btn list-btn', 'aria-label': 'Open the list', hidden: true }, '☰');
 const fab = el('button', { class: 'fab', 'aria-label': 'New phrase' }, '+');
-ui.append(hint, homeBtn, listBtn, fab);
+ui.append(logo, hint, homeBtn, listBtn, fab);
 
 let focused = null;
 
