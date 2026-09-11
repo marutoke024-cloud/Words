@@ -1,6 +1,6 @@
 {
-  "name": "Knowledge Room",
-  "short_name": "Knowledge Room",
+  "name": "Thinkubator",
+  "short_name": "Thinkubator",
   "description": "A low-poly room where the furniture keeps your business English phrases.",
   "start_url": "./index.html",
   "scope": "./",

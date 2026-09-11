@@ -33,7 +33,85 @@
   --accent: #c9b6ff;
   --safe-b: env(safe-area-inset-bottom, 0px);
   --safe-t: env(safe-area-inset-top, 0px);
+
+  /* Night is the default; the other slots override these on <body>. */
+  --logo-1: #ffffff;
+  --logo-2: #e4dcff;
+  --logo-3: #a996f0;
+  --logo-4: #7a63cc;
+  --logo-5: #9c86e4;
+  --logo-edge: rgba(60, 45, 110, 0.95);
+  --logo-edge-deep: rgba(36, 26, 72, 0.92);
+  --logo-rule: rgba(228, 218, 255, 0.6);
+
+  --sky: radial-gradient(120% 80% at 50% 18%, #3b2a6b 0%, #241a48 42%, #140d26 74%, #0b0718 100%),
+    radial-gradient(60% 40% at 12% 88%, rgba(94, 60, 140, 0.55), transparent 70%),
+    radial-gradient(50% 40% at 88% 78%, rgba(58, 92, 148, 0.4), transparent 70%);
+  --sky-base: #0d0819;
+
   color-scheme: dark;
+}
+
+body[data-time="dawn"] {
+  --logo-1: #fff4e8;
+  --logo-2: #ffd9c2;
+  --logo-3: #b87d9e;
+  --logo-4: #6b4474;
+  --logo-5: #91618a;
+  --logo-edge: rgba(94, 54, 92, 0.95);
+  --logo-edge-deep: rgba(52, 28, 58, 0.92);
+  --logo-rule: rgba(255, 228, 212, 0.65);
+  --glass-base: rgba(22, 15, 28, 0.34);
+  --glass-blur: blur(30px) saturate(160%) brightness(0.82);
+  --sky: radial-gradient(120% 80% at 50% 16%, #ffb68e 0%, #bb789c 34%, #5d4076 66%, #2b1c42 100%),
+    radial-gradient(60% 40% at 14% 86%, rgba(255, 150, 120, 0.4), transparent 70%),
+    radial-gradient(50% 40% at 86% 80%, rgba(120, 90, 170, 0.4), transparent 70%);
+  --sky-base: #2b1c42;
+}
+
+body[data-time="day"] {
+  --logo-1: #fffaf0;
+  --logo-2: #ffe4b4;
+  --logo-3: #c87a46;
+  --logo-4: #7f4326;
+  --logo-5: #ac6034;
+  --logo-edge: rgba(96, 48, 24, 0.9);
+  --logo-edge-deep: rgba(54, 25, 12, 0.9);
+  --logo-rule: rgba(104, 58, 32, 0.55);
+  /* A sunlit room behind the glass would swallow white text, so daylight gets
+     a smoked pane: still see-through, but dark enough to read against. */
+  --glass-base: rgba(18, 13, 24, 0.42);
+  --glass-blur: blur(30px) saturate(135%) brightness(0.62);
+  --glass-line: rgba(255, 255, 255, 0.32);
+  --glass-sheen: linear-gradient(
+    148deg,
+    rgba(255, 255, 255, 0.18) 0%,
+    rgba(255, 255, 255, 0.04) 26%,
+    rgba(255, 255, 255, 0.01) 52%,
+    rgba(255, 255, 255, 0.06) 78%,
+    rgba(255, 255, 255, 0.15) 100%
+  );
+  --sky: radial-gradient(120% 80% at 50% 14%, #fdf3de 0%, #ffdfb2 26%, #a9c8ea 60%, #6e8fc4 100%),
+    radial-gradient(60% 40% at 12% 88%, rgba(255, 214, 150, 0.5), transparent 70%),
+    radial-gradient(55% 42% at 88% 80%, rgba(150, 190, 235, 0.45), transparent 70%);
+  --sky-base: #6e8fc4;
+}
+
+body[data-time="dusk"] {
+  --logo-1: #fff2e2;
+  --logo-2: #ffd2ac;
+  --logo-3: #cc6b51;
+  --logo-4: #6f2f4c;
+  --logo-5: #a0465a;
+  --logo-edge: rgba(110, 44, 56, 0.95);
+  --logo-edge-deep: rgba(58, 22, 38, 0.92);
+  --logo-rule: rgba(255, 216, 190, 0.62);
+  --glass-base: rgba(22, 13, 26, 0.36);
+  --glass-blur: blur(30px) saturate(155%) brightness(0.8);
+  --sky: radial-gradient(120% 80% at 50% 18%, #ffa662 0%, #d2648a 30%, #6e3a76 64%, #2c1940 100%),
+    radial-gradient(60% 40% at 14% 86%, rgba(255, 160, 110, 0.45), transparent 70%),
+    radial-gradient(50% 40% at 86% 80%, rgba(130, 90, 180, 0.4), transparent 70%);
+  --sky-base: #2c1940;
 }
 
 * {
@@ -51,7 +129,7 @@ body {
   height: 100%;
   overflow: hidden;
   overscroll-behavior: none;
-  background: #0d0819;
+  background: var(--sky-base);
   color: var(--ink);
   font-family: "Inter", "Segoe UI", system-ui, -apple-system, sans-serif;
   touch-action: none;
@@ -62,10 +140,8 @@ body::before {
   content: "";
   position: fixed;
   inset: 0;
-  background:
-    radial-gradient(120% 80% at 50% 18%, #3b2a6b 0%, #241a48 42%, #140d26 74%, #0b0718 100%),
-    radial-gradient(60% 40% at 12% 88%, rgba(94, 60, 140, 0.55), transparent 70%),
-    radial-gradient(50% 40% at 88% 78%, rgba(58, 92, 148, 0.4), transparent 70%);
+  background: var(--sky);
+  transition: background 0.6s ease;
   z-index: -1;
 }
 
@@ -312,52 +388,53 @@ body::before {
   }
 }
 
-.logo-top {
-  display: flex;
-  align-items: center;
-  gap: 11px;
-  font-size: 12px;
-  font-weight: 600;
-  letter-spacing: 0.46em;
-  text-indent: 0.46em;
-  text-transform: uppercase;
-  color: rgba(228, 218, 255, 0.7);
-  text-shadow: 0 1px 4px rgba(6, 3, 18, 0.7);
-}
-
-.logo-top::before,
-.logo-top::after {
-  content: "";
-  width: 24px;
-  height: 1px;
-  background: linear-gradient(90deg, transparent, rgba(228, 218, 255, 0.55));
-}
-
-.logo-top::after {
-  transform: scaleX(-1);
-}
-
-/* Two hard-edged colour bands read as the lit and shaded faces of one solid. */
 .logo-main {
-  font-size: 42px;
+  font-size: clamp(23px, 8.9vw, 44px);
   font-weight: 800;
-  letter-spacing: 0.16em;
-  text-indent: 0.16em;
+  letter-spacing: 0.1em;
+  text-indent: 0.1em;
   text-transform: uppercase;
   line-height: 1;
+  white-space: nowrap;
+  /* Two hard-edged bands read as the lit and shaded faces of one solid. */
   background-image: linear-gradient(
     177deg,
-    #ffffff 0%,
-    #e4dcff 43%,
-    #a996f0 43.6%,
-    #7a63cc 76%,
-    #9c86e4 100%
+    var(--logo-1) 0%,
+    var(--logo-2) 43%,
+    var(--logo-3) 43.6%,
+    var(--logo-4) 78%,
+    var(--logo-5) 100%
   );
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
-  filter: drop-shadow(0 2px 0 rgba(60, 45, 110, 0.95)) drop-shadow(0 4px 0 rgba(36, 26, 72, 0.92))
-    drop-shadow(0 12px 22px rgba(5, 2, 16, 0.65));
+  filter: drop-shadow(0 2px 0 var(--logo-edge)) drop-shadow(0 4px 0 var(--logo-edge-deep))
+    drop-shadow(0 12px 22px rgba(5, 2, 16, 0.6));
+}
+
+.logo-rule {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: min(74vw, 320px);
+}
+
+.logo-rule i {
+  flex: 1;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--logo-rule));
+}
+
+.logo-rule i:last-child {
+  transform: scaleX(-1);
+}
+
+.logo-rule b {
+  width: 7px;
+  height: 7px;
+  transform: rotate(45deg);
+  background: var(--logo-rule);
+  box-shadow: 0 0 10px var(--logo-rule);
 }
 
 /* ---------- bottom sheet ---------- */

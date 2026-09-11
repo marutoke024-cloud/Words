@@ -1,10 +1,11 @@
 import * as THREE from '../../vendor/three.module.js';
 import { PALETTE } from './palette.js';
-import { buildShell, glowSprite } from './build.js';
+import { buildShell, glowSprite, setColorGrade } from './build.js';
 import { buildInteractive, buildProps } from './furniture.js';
 import { createMascot } from './mascot.js';
 import { createSchool } from './fish.js';
 import { createControls } from './controls.js';
+import { currentPreset } from './timeOfDay.js';
 
 /**
  * The room itself: scene graph, render loop and hit testing.
@@ -12,25 +13,31 @@ import { createControls } from './controls.js';
  * is handed back through the callbacks.
  */
 export function createRoom(canvas, { onPickCategory, onPickPhrase } = {}) {
+  // Lit for the hour the app was opened; the id also drives the CSS backdrop.
+  const time = currentPreset();
+  setColorGrade(time.grade);
+  document.body.dataset.time = time.id;
+  document.querySelector('meta[name="theme-color"]')?.setAttribute('content', time.themeColor);
+
   const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true, powerPreference: 'high-performance' });
   renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
   renderer.outputColorSpace = THREE.SRGBColorSpace;
   renderer.toneMapping = THREE.ACESFilmicToneMapping;
-  renderer.toneMappingExposure = 1.15;
+  renderer.toneMappingExposure = time.exposure;
   renderer.shadowMap.enabled = true;
   renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 
   const scene = new THREE.Scene();
-  scene.fog = new THREE.Fog(PALETTE.fog, 34, 110);
+  scene.fog = new THREE.Fog(time.fog.color, time.fog.near, time.fog.far);
 
   const camera = new THREE.PerspectiveCamera(34, 1, 0.1, 220);
 
-  scene.add(new THREE.AmbientLight(0x5a4a94, 0.75));
-  const hemi = new THREE.HemisphereLight(0x9a86e8, 0x2a1f4a, 0.85);
+  scene.add(new THREE.AmbientLight(time.ambient.color, time.ambient.intensity));
+  const hemi = new THREE.HemisphereLight(time.hemi.sky, time.hemi.ground, time.hemi.intensity);
   scene.add(hemi);
 
-  const moon = new THREE.DirectionalLight(0xbfaeff, 1.0);
-  moon.position.set(9, 15, 8);
+  const moon = new THREE.DirectionalLight(time.sun.color, time.sun.intensity);
+  moon.position.set(...time.sun.position);
   moon.castShadow = true;
   moon.shadow.mapSize.set(1024, 1024);
   moon.shadow.camera.left = -12;
@@ -42,8 +49,16 @@ export function createRoom(canvas, { onPickCategory, onPickPhrase } = {}) {
   scene.add(moon);
 
   scene.add(buildShell());
-  buildProps(scene);
+  buildProps(scene, time);
   const items = buildInteractive(scene);
+
+  // The lamps, screens and tank light keep their relative balance but fade
+  // out as the daylight comes up.
+  if (time.indoorLights !== 1) {
+    scene.traverse((o) => {
+      if (o.isPointLight) o.intensity *= time.indoorLights;
+    });
+  }
   const byCategory = new Map(items.map((i) => [i.categoryId, i]));
 
   const mascot = createMascot(scene);
