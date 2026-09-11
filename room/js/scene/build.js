@@ -4,10 +4,41 @@ import { PALETTE } from './palette.js';
 /** Low-poly helpers: everything in the room is boxes, cylinders and cones. */
 const matCache = new Map();
 
+/**
+ * A single colour grade applied to every surface as it is built, so the room's
+ * own paint shifts with the hour instead of only its lighting. Set once, before
+ * anything is built.
+ */
+let grade = null;
+const scratch = new THREE.Color();
+const tint = new THREE.Color();
+
+export function setColorGrade(g) {
+  grade = g || null;
+  matCache.clear();
+}
+
+function graded(color) {
+  if (!grade) return color;
+  scratch.set(color);
+  tint.set(grade.tint);
+  scratch.lerp(tint, grade.amount);
+  const hsl = { h: 0, s: 0, l: 0 };
+  scratch.getHSL(hsl);
+  scratch.setHSL(hsl.h, Math.min(1, hsl.s * grade.saturation), Math.min(1, hsl.l * grade.lightness));
+  return scratch.getHex();
+}
+
 export function mat(color, opts = {}) {
   const key = `${color}|${JSON.stringify(opts)}`;
   if (matCache.has(key)) return matCache.get(key);
-  const m = new THREE.MeshLambertMaterial({ color, flatShading: true, ...opts });
+  const shaded = graded(color);
+  const m = new THREE.MeshLambertMaterial({
+    color: shaded,
+    flatShading: true,
+    ...opts,
+    ...(opts.emissive !== undefined ? { emissive: graded(opts.emissive) } : {})
+  });
   matCache.set(key, m);
   return m;
 }

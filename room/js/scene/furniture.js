@@ -231,7 +231,7 @@ export function buildInteractive(scene) {
 /* Non-interactive props — pure set dressing.                          */
 /* ------------------------------------------------------------------ */
 
-export function buildProps(scene) {
+export function buildProps(scene, time) {
   const props = new THREE.Group();
 
   // Rug in front of the TV
@@ -369,11 +369,16 @@ export function buildProps(scene) {
   });
 
   // Window on the back wall, right end
+  const sky = time?.window ?? { color: 0x8aa6e8, emissive: 0.3 };
   const windowFrame = box(1.7, 1.5, 0.1, 0xc98f6b, 5.0, 4.3, -5.85);
-  const windowGlass = box(1.5, 1.3, 0.06, 0x8aa6e8, 5.0, 4.3, -5.78, {
-    material: glowMat(0x8aa6e8, 0.3)
+  const windowGlass = box(1.5, 1.3, 0.06, sky.color, 5.0, 4.3, -5.78, {
+    material: glowMat(sky.color, sky.emissive)
   });
-  props.add(windowFrame, windowGlass, glowSprite(0xa9c4ff, 3.0, 0.2).translateX(5.0).translateY(4.3).translateZ(-5.4));
+  props.add(
+    windowFrame,
+    windowGlass,
+    glowSprite(sky.color, 3.0, 0.16 + sky.emissive * 0.18).translateX(5.0).translateY(4.3).translateZ(-5.4)
+  );
 
   // Toy blocks scattered on the floor
   [[1.6, 3.9, 0xd8776b], [1.95, 3.75, 0x6bb8d8], [2.3, 3.95, 0x7fd89a]].forEach(([x, z, c]) =>
@@ -444,9 +449,9 @@ function drawLogo(ctx, w, h) {
   ctx.arc(w / 2, h * 0.46, h * 0.09, 0.2, Math.PI - 0.2);
   ctx.stroke();
   ctx.fillStyle = '#b7aee8';
-  ctx.font = `${Math.round(h * 0.1)}px sans-serif`;
+  ctx.font = `600 ${Math.round(h * 0.11)}px sans-serif`;
   ctx.textAlign = 'center';
-  ctx.fillText('KNOWLEDGE ROOM', w / 2, h * 0.82);
+  ctx.fillText('THINKUBATOR', w / 2, h * 0.82);
 }
 
 function drawFishArt(ctx, w, h) {

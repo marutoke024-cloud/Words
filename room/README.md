@@ -1,4 +1,4 @@
-# Knowledge Room — Global Meeting Phrase Room
+# Thinkubator — Global Meeting Phrase Room
 
 Global会議で「いつか使いたい」と思ったビジネス英語フレーズを、**ローポリの自室**に
 しまっておくための個人用アプリ。学習アプリではなく **記録簿（ログ）** なので、

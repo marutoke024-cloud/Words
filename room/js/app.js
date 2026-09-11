@@ -16,8 +16,8 @@ const loader = document.getElementById('loader');
 const logo = el(
   'div',
   { class: 'logo', 'aria-hidden': 'true' },
-  el('span', { class: 'logo-top', text: 'Knowledge' }),
-  el('span', { class: 'logo-main', text: 'Room' })
+  el('span', { class: 'logo-main', text: 'Thinkubator' }),
+  el('span', { class: 'logo-rule' }, el('i'), el('b'), el('i'))
 );
 const hint = el('div', { class: 'hint', hidden: true });
 const homeBtn = el('button', { class: 'chip-btn home-btn', 'aria-label': 'Back to the room', hidden: true }, '⌂');

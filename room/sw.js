@@ -1,5 +1,5 @@
-/* Knowledge Room service worker — cache-first shell so the room opens offline. */
-const CACHE = 'phrase-room-v4';
+/* Thinkubator service worker — cache-first shell so the room opens offline. */
+const CACHE = 'phrase-room-v5';
 const SHELL = [
   './',
   './index.html',
@@ -17,6 +17,7 @@ const SHELL = [
   './js/scene/fish.js',
   './js/scene/controls.js',
   './js/scene/palette.js',
+  './js/scene/timeOfDay.js',
   './js/ui/dom.js',
   './js/ui/icons.js',
   './js/ui/sheet.js',
