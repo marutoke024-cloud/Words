@@ -35,14 +35,9 @@
   --safe-t: env(safe-area-inset-top, 0px);
 
   /* Night is the default; the other slots override these on <body>. */
-  --logo-1: #ffffff;
-  --logo-2: #e4dcff;
-  --logo-3: #a996f0;
-  --logo-4: #7a63cc;
-  --logo-5: #9c86e4;
-  --logo-edge: rgba(60, 45, 110, 0.95);
-  --logo-edge-deep: rgba(36, 26, 72, 0.92);
-  --logo-rule: rgba(228, 218, 255, 0.6);
+  --logo-ink: #efe9ff;
+  --logo-accent: #c3b0ff;
+  --logo-glow: rgba(150, 120, 240, 0.45);
 
   --sky: radial-gradient(120% 80% at 50% 18%, #3b2a6b 0%, #241a48 42%, #140d26 74%, #0b0718 100%),
     radial-gradient(60% 40% at 12% 88%, rgba(94, 60, 140, 0.55), transparent 70%),
@@ -53,14 +48,9 @@
 }
 
 body[data-time="dawn"] {
-  --logo-1: #fff4e8;
-  --logo-2: #ffd9c2;
-  --logo-3: #b87d9e;
-  --logo-4: #6b4474;
-  --logo-5: #91618a;
-  --logo-edge: rgba(94, 54, 92, 0.95);
-  --logo-edge-deep: rgba(52, 28, 58, 0.92);
-  --logo-rule: rgba(255, 228, 212, 0.65);
+  --logo-ink: #fff1e6;
+  --logo-accent: #ffb9a2;
+  --logo-glow: rgba(255, 150, 120, 0.4);
   --glass-base: rgba(22, 15, 28, 0.34);
   --glass-blur: blur(30px) saturate(160%) brightness(0.82);
   --sky: radial-gradient(120% 80% at 50% 16%, #ffb68e 0%, #bb789c 34%, #5d4076 66%, #2b1c42 100%),
@@ -70,14 +60,9 @@ body[data-time="dawn"] {
 }
 
 body[data-time="day"] {
-  --logo-1: #fffaf0;
-  --logo-2: #ffe4b4;
-  --logo-3: #c87a46;
-  --logo-4: #7f4326;
-  --logo-5: #ac6034;
-  --logo-edge: rgba(96, 48, 24, 0.9);
-  --logo-edge-deep: rgba(54, 25, 12, 0.9);
-  --logo-rule: rgba(104, 58, 32, 0.55);
+  --logo-ink: #43301f;
+  --logo-accent: #8c5a2c;
+  --logo-glow: rgba(255, 236, 200, 0.55);
   /* A sunlit room behind the glass would swallow white text, so daylight gets
      a smoked pane: still see-through, but dark enough to read against. */
   --glass-base: rgba(18, 13, 24, 0.42);
@@ -98,14 +83,9 @@ body[data-time="day"] {
 }
 
 body[data-time="dusk"] {
-  --logo-1: #fff2e2;
-  --logo-2: #ffd2ac;
-  --logo-3: #cc6b51;
-  --logo-4: #6f2f4c;
-  --logo-5: #a0465a;
-  --logo-edge: rgba(110, 44, 56, 0.95);
-  --logo-edge-deep: rgba(58, 22, 38, 0.92);
-  --logo-rule: rgba(255, 216, 190, 0.62);
+  --logo-ink: #ffeede;
+  --logo-accent: #ffab84;
+  --logo-glow: rgba(255, 140, 100, 0.42);
   --glass-base: rgba(22, 13, 26, 0.36);
   --glass-blur: blur(30px) saturate(155%) brightness(0.8);
   --sky: radial-gradient(120% 80% at 50% 18%, #ffa662 0%, #d2648a 30%, #6e3a76 64%, #2c1940 100%),
@@ -220,7 +200,7 @@ body::before {
 .sheet::after,
 .detail-card::after,
 .word-popup::after,
-.toast::after,
+.speech-inner::after,
 .hint::after,
 .chip-btn::after,
 .fab::after {
@@ -239,7 +219,7 @@ body::before {
 
 /* Text stays legible even where the room behind the glass is bright. */
 .phrase-text,
-.toast-text,
+.speech-text,
 .wp-meaning,
 .wp-word,
 .sheet-titles h2,
@@ -364,23 +344,24 @@ body::before {
 /* ---------- title ---------- */
 .logo {
   position: fixed;
-  top: calc(88px + var(--safe-t));
+  top: calc(22px + var(--safe-t));
   left: 0;
   right: 0;
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 5px;
+  gap: 7px;
   pointer-events: none;
   user-select: none;
   z-index: 5;
+  color: var(--logo-ink);
   animation: logo-in 0.9s 0.2s cubic-bezier(0.2, 1, 0.3, 1) both;
 }
 
 @keyframes logo-in {
   from {
     opacity: 0;
-    transform: translateY(-10px) scale(0.94);
+    transform: translateY(-8px) scale(0.94);
   }
   to {
     opacity: 1;
@@ -388,53 +369,24 @@ body::before {
   }
 }
 
-.logo-main {
-  font-size: clamp(23px, 8.9vw, 44px);
-  font-weight: 800;
-  letter-spacing: 0.1em;
-  text-indent: 0.1em;
+.logo-mark {
+  font-size: 44px;
+  color: var(--logo-accent);
+  filter: drop-shadow(0 0 16px var(--logo-glow)) drop-shadow(0 3px 6px rgba(6, 3, 16, 0.45));
+}
+
+.logo-mark svg {
+  filter: none;
+}
+
+.logo-word {
+  font-size: 12.5px;
+  font-weight: 600;
+  letter-spacing: 0.34em;
+  text-indent: 0.34em;
   text-transform: uppercase;
-  line-height: 1;
-  white-space: nowrap;
-  /* Two hard-edged bands read as the lit and shaded faces of one solid. */
-  background-image: linear-gradient(
-    177deg,
-    var(--logo-1) 0%,
-    var(--logo-2) 43%,
-    var(--logo-3) 43.6%,
-    var(--logo-4) 78%,
-    var(--logo-5) 100%
-  );
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent;
-  filter: drop-shadow(0 2px 0 var(--logo-edge)) drop-shadow(0 4px 0 var(--logo-edge-deep))
-    drop-shadow(0 12px 22px rgba(5, 2, 16, 0.6));
-}
-
-.logo-rule {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  width: min(74vw, 320px);
-}
-
-.logo-rule i {
-  flex: 1;
-  height: 1px;
-  background: linear-gradient(90deg, transparent, var(--logo-rule));
-}
-
-.logo-rule i:last-child {
-  transform: scaleX(-1);
-}
-
-.logo-rule b {
-  width: 7px;
-  height: 7px;
-  transform: rotate(45deg);
-  background: var(--logo-rule);
-  box-shadow: 0 0 10px var(--logo-rule);
+  opacity: 0.86;
+  text-shadow: 0 1px 6px rgba(6, 3, 16, 0.55);
 }
 
 /* ---------- bottom sheet ---------- */
@@ -985,16 +937,29 @@ body::before {
   transform: scale(0.98);
 }
 
-/* ---------- toast ---------- */
-.toast {
+/* ---------- speech bubble ---------- */
+.speech {
   position: fixed;
-  left: 12px;
-  right: 12px;
-  top: calc(12px + var(--safe-t));
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  padding: 12px 12px;
+  left: 0;
+  top: 0;
+  max-width: min(74vw, 300px);
+  opacity: 0;
+  transition: opacity 0.26s ease;
+  z-index: 28;
+  pointer-events: none;
+}
+
+.speech.is-in {
+  opacity: 1;
+}
+
+.speech.is-hidden-behind {
+  opacity: 0;
+}
+
+.speech-inner {
+  position: relative;
+  padding: 12px 15px;
   border-radius: 18px;
   border: 1px solid var(--glass-line);
   background-color: var(--glass-base);
@@ -1002,41 +967,46 @@ body::before {
   backdrop-filter: var(--glass-blur);
   -webkit-backdrop-filter: var(--glass-blur);
   box-shadow: var(--glass-drop), var(--glass-edge);
-  opacity: 0;
-  transform: translateY(-20px);
-  transition: opacity 0.4s ease, transform 0.45s cubic-bezier(0.2, 1, 0.3, 1);
-  z-index: 28;
+  transform-origin: bottom center;
+  animation: speech-pop 0.5s cubic-bezier(0.2, 1.45, 0.4, 1) both;
+  pointer-events: auto;
 }
 
-.toast.is-in {
-  opacity: 1;
-  transform: none;
+@keyframes speech-pop {
+  from {
+    opacity: 0;
+    transform: translateY(8px) scale(0.72);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
 }
 
-.toast-glyph {
-  font-size: 20px;
-  color: var(--accent);
-  filter: drop-shadow(0 0 10px color-mix(in srgb, var(--accent) 60%, transparent));
+/* The tail keeps pointing at the head even when the bubble is nudged inward. */
+.speech-inner::before {
+  content: "";
+  position: absolute;
+  bottom: -7px;
+  left: calc(50% + var(--tail-x, 0px));
+  width: 15px;
+  height: 15px;
+  margin-left: -7.5px;
+  border-radius: 0 0 4px 0;
+  border-right: 1px solid var(--glass-line);
+  border-bottom: 1px solid var(--glass-line);
+  background-color: var(--glass-base);
+  background-image: var(--glass-sheen);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+  transform: rotate(45deg);
 }
 
-.toast-text {
-  flex: 1;
-  font-size: 13.5px;
-  line-height: 1.4;
+.speech-text {
+  margin: 0;
+  font-size: 15px;
+  line-height: 1.5;
   color: var(--ink);
-  display: -webkit-box;
-  -webkit-line-clamp: 2;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
-}
-
-.toast-close {
-  border: 0;
-  background: transparent;
-  color: var(--ink-soft);
-  font-size: 13px;
-  width: 26px;
-  height: 26px;
 }
 
 button {
@@ -1053,13 +1023,6 @@ button {
     max-height: 74vh;
     border-radius: 24px;
     border: 1px solid var(--line);
-  }
-
-  .toast {
-    left: auto;
-    width: 380px;
-    right: 24px;
-    top: calc(20px + var(--safe-t));
   }
 }
 
