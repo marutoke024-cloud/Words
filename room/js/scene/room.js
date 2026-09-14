@@ -12,7 +12,7 @@ import { currentPreset } from './timeOfDay.js';
  * It knows nothing about phrases beyond "here is a fish id" — everything else
  * is handed back through the callbacks.
  */
-export function createRoom(canvas, { onPickCategory, onPickPhrase } = {}) {
+export function createRoom(canvas, { onPickCategory, onPickPhrase, onPickMascot } = {}) {
   // Lit for the hour the app was opened; the id also drives the CSS backdrop.
   const time = currentPreset();
   setColorGrade(time.grade);
@@ -93,6 +93,13 @@ export function createRoom(canvas, { onPickCategory, onPickPhrase } = {}) {
       // across the room the tank itself is the target, so a stray tap flies
       // there instead of opening a random phrase. The threshold follows the
       // tank's own close-up distance, which changes with the screen shape.
+      for (const hit of hits) {
+        if (lookup(hit.object, 'mascot')) {
+          onPickMascot?.();
+          return;
+        }
+      }
+
       const tankRange = tank.focus.dist * controls.state.focusFit * 1.35;
       if (aquariumFocused || camera.position.distanceTo(tankCentre) < tankRange) {
         for (const hit of hits) {
@@ -189,6 +196,25 @@ export function createRoom(canvas, { onPickCategory, onPickPhrase } = {}) {
       school.layout(phrases);
     },
     cheer: mascot.cheer,
+    /** Bellow, turning to face the camera first. */
+    roar() {
+      const at = new THREE.Vector3();
+      mascot.object.getWorldPosition(at);
+      mascot.roar(Math.atan2(camera.position.x - at.x, camera.position.z - at.z) + Math.PI);
+    },
+    /** Where a speech bubble should sit, in CSS pixels above the head. */
+    mascotAnchor() {
+      const at = new THREE.Vector3();
+      mascot.object.getWorldPosition(at);
+      at.y += 2.0;
+      at.project(camera);
+      const rect = canvas.getBoundingClientRect();
+      return {
+        x: rect.left + (at.x * 0.5 + 0.5) * rect.width,
+        y: rect.top + (-at.y * 0.5 + 0.5) * rect.height,
+        behind: at.z > 1
+      };
+    },
     setInteractive(v) {
       controls.enabled = v;
     },

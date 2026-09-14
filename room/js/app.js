@@ -4,7 +4,7 @@ import { createRoom } from './scene/room.js';
 import { createSheet } from './ui/sheet.js';
 import { createEditor } from './ui/editor.js';
 import { createDetail } from './ui/detail.js';
-import { createToast, pickOfTheMoment } from './ui/toast.js';
+import { createSpeech } from './ui/speech.js';
 import { el, clear, haptic } from './ui/dom.js';
 import { iconEl } from './ui/icons.js';
 import { close as closeWordPopup, isOpen as wordPopupOpen } from './ui/wordPopup.js';
@@ -16,8 +16,8 @@ const loader = document.getElementById('loader');
 const logo = el(
   'div',
   { class: 'logo', 'aria-hidden': 'true' },
-  el('span', { class: 'logo-main', text: 'Thinkubator' }),
-  el('span', { class: 'logo-rule' }, el('i'), el('b'), el('i'))
+  iconEl('egg', 'logo-mark'),
+  el('span', { class: 'logo-word', text: 'Thinkubator' })
 );
 const hint = el('div', { class: 'hint', hidden: true });
 const homeBtn = el('button', { class: 'chip-btn home-btn', 'aria-label': 'Back to the room', hidden: true }, '⌂');
@@ -35,7 +35,8 @@ const room = createRoom(canvas, {
       haptic();
       detail.open(phrase);
     }
-  }
+  },
+  onPickMascot: () => speakRandomPhrase()
 });
 
 const sheet = createSheet(ui, {
@@ -71,12 +72,28 @@ const editor = createEditor(ui, {
   }
 });
 
-const toast = createToast(ui, {
+const speech = createSpeech(ui, {
   onOpen: (id) => {
     const phrase = store.get(id);
     if (phrase) detail.open(phrase);
   }
 });
+
+let lastSpoken = null;
+
+/** One phrase at random, avoiding an immediate repeat. */
+function speakRandomPhrase() {
+  haptic(18);
+  room.roar();
+  const all = store.all();
+  let pick = null;
+  if (all.length) {
+    const pool = all.length > 1 ? all.filter((p) => p.id !== lastSpoken) : all;
+    pick = pool[Math.floor(Math.random() * pool.length)];
+    lastSpoken = pick.id;
+  }
+  setTimeout(() => speech.show(pick, room.mascotAnchor), 260);
+}
 
 function showHint(text, icon, ms = 2600) {
   clear(hint);
@@ -155,6 +172,7 @@ window.addEventListener('keydown', (e) => {
     closeWordPopup();
     return;
   }
+  if (speech.isOpen) speech.hide();
   if (detail.isOpen) detail.close();
   else if (sheet.isOpen) sheet.close();
   else if (focused) backToRoom();
@@ -164,11 +182,6 @@ window.addEventListener('keydown', (e) => {
   await store.init();
   loader.classList.add('is-out');
   setTimeout(() => loader.remove(), 700);
-
-  setTimeout(() => {
-    const pick = pickOfTheMoment(store.all());
-    if (pick) toast.show(pick);
-  }, 1800);
 })();
 
 if ('serviceWorker' in navigator) {

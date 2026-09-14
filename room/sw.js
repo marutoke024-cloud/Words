@@ -1,5 +1,5 @@
 /* Thinkubator service worker — cache-first shell so the room opens offline. */
-const CACHE = 'phrase-room-v5';
+const CACHE = 'phrase-room-v6';
 const SHELL = [
   './',
   './index.html',
@@ -23,7 +23,7 @@ const SHELL = [
   './js/ui/sheet.js',
   './js/ui/editor.js',
   './js/ui/detail.js',
-  './js/ui/toast.js',
+  './js/ui/speech.js',
   './js/ui/phraseView.js',
   './js/ui/wordPopup.js',
   './vendor/three.module.js',

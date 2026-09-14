@@ -43,8 +43,10 @@ export function createMascot(scene) {
   }
 
   g.add(body, belly, neck, head, snout, eyeL, eyeR, armL, armR, legL, legR, footL, footR, tail);
-  g.scale.setScalar(0.92);
+  const BASE_SCALE = 0.92;
+  g.scale.setScalar(BASE_SCALE);
   g.position.set(0.6, 0, 1.4);
+  g.userData.mascot = true; // so a tap anywhere on the body finds it
   scene.add(g);
 
   const state = {
@@ -52,8 +54,13 @@ export function createMascot(scene) {
     mode: 'walk',
     timer: 0,
     phase: 0,
-    speed: 0.85
+    speed: 0.85,
+    /** Yaw to turn toward while roaring, so it addresses the viewer. */
+    faceYaw: null
   };
+
+  const ROAR_TIME = 1.25;
+  const SNOUT_Y = snout.position.y;
 
   function pickTarget() {
     return new THREE.Vector3(
@@ -65,6 +72,44 @@ export function createMascot(scene) {
 
   function update(dt) {
     state.timer -= dt;
+
+    if (state.mode === 'roar') {
+      const t = 1 - Math.max(0, state.timer) / ROAR_TIME;
+      // One quick rear-back-and-bellow, settling as it ends.
+      const pulse = Math.sin(Math.min(1, t * 1.35) * Math.PI);
+      const decay = 1 - t;
+
+      if (state.faceYaw !== null) {
+        let delta = state.faceYaw - g.rotation.y;
+        while (delta > Math.PI) delta -= Math.PI * 2;
+        while (delta < -Math.PI) delta += Math.PI * 2;
+        g.rotation.y += delta * Math.min(1, dt * 9);
+      }
+
+      neck.rotation.x = -0.3 * pulse;
+      head.rotation.x = -0.6 * pulse;
+      head.rotation.y = 0;
+      snout.position.y = SNOUT_Y - 0.09 * pulse;
+      armL.rotation.x = -0.75 * pulse;
+      armR.rotation.x = -0.75 * pulse;
+      tail.rotation.y = Math.sin(t * 34) * 0.34 * decay;
+      g.position.y = Math.abs(Math.sin(t * Math.PI * 1.6)) * 0.16 * decay;
+      g.scale.setScalar(BASE_SCALE * (1 + 0.07 * pulse));
+
+      if (state.timer <= 0) {
+        neck.rotation.x = 0;
+        head.rotation.x = 0;
+        snout.position.y = SNOUT_Y;
+        armL.rotation.x = 0;
+        armR.rotation.x = 0;
+        g.scale.setScalar(BASE_SCALE);
+        g.position.y = 0;
+        state.mode = 'idle';
+        state.timer = 0.9;
+        state.faceYaw = null;
+      }
+      return;
+    }
 
     if (state.mode === 'idle') {
       state.phase += dt * 1.6;
@@ -113,6 +158,13 @@ export function createMascot(scene) {
     g.position.y = Math.abs(Math.sin(state.phase)) * 0.05;
   }
 
+  /** Rears back and bellows — used when the room-mate is tapped. */
+  function roar(faceYaw = null) {
+    state.mode = 'roar';
+    state.timer = ROAR_TIME;
+    state.faceYaw = faceYaw;
+  }
+
   /** Little hop used when the app wants the room to react (e.g. a new phrase). */
   function cheer() {
     state.mode = 'idle';
@@ -131,5 +183,5 @@ export function createMascot(scene) {
     hop();
   }
 
-  return { object: g, update, cheer };
+  return { object: g, update, cheer, roar };
 }

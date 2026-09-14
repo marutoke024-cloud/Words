@@ -32,6 +32,14 @@ const SVG = {
     <polygon points="6.4,12 1.2,6.8 2.7,12 1.2,17.2" opacity=".66"/>
     <polygon points="11.4,15.6 16.4,15 13.4,18.4" opacity=".38"/>
     <circle cx="17.4" cy="10.7" r="1.25" fill="#fff" opacity=".92"/>`,
+  /** The app mark: a low-poly egg with an idea taking shape inside. */
+  egg: `
+    <polygon points="12,1.4 6,7.6 3.6,14.6 6.6,21 12,22.7" opacity=".5"/>
+    <polygon points="12,1.4 18,7.6 20.4,14.6 17.4,21 12,22.7" opacity=".9"/>
+    <polygon points="12,1.4 18,7.6 12,10.6 6,7.6" opacity="1"/>
+    <polygon points="12,11.2 15.1,15.1 12,19 8.9,15.1" fill="#fff" opacity=".92"/>
+    <polygon points="12,11.2 15.1,15.1 12,15.1" fill="#fff" opacity=".5"/>
+  `,
   trash: `
     <polygon points="9.6,3.4 14.4,3.1 14.6,5.4 9.5,5.7" opacity=".45"/>
     <polygon points="3.6,6.2 20.4,5.2 20.4,8.2 3.6,9.3" opacity=".55"/>
